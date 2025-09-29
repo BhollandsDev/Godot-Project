@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=3 uid="uid://cp0uea88vtojc"]
+
+[ext_resource type="Script" uid="uid://dobappu7dhni5" path="res://Scripts/map_generator.gd" id="1_803pc"]
+[ext_resource type="Texture2D" uid="uid://cledmohmaryxf" path="res://Sprites/Sprite-0001.png" id="2_wscbm"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_wscbm"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3or5r"]
+texture = ExtResource("2_wscbm")
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_rcqok"]
+sources/0 = SubResource("TileSetAtlasSource_3or5r")
+
+[node name="Map Generator" type="Node2D"]
+script = ExtResource("1_803pc")
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_wscbm")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="NavigationRegion2D"]
+tile_set = SubResource("TileSet_rcqok")

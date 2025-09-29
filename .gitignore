@@ -1,0 +1,30 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Godot import cache
+.import/
+.export/
+
+
+# Mono-specific (if you’re using C#)
+.mono/
+data_*/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+*.apk
+*.aab
+*.pck
+*.zip
+*.tar.gz
+
+# Logs
+*.log
