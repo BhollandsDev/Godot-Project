@@ -9,26 +9,53 @@ var spawn_start = Vector2(80, 80)
 var spawn_offset = Vector2(20, 20)
 var units_per_row = 5
 var occupied_positions: Array = []
+var selected_rect: Rect2:
+	set(value):
+		selected_rect = value
+		check_unit()
+		#print(selected_units)
+		#print(selected_rect)
 #var to store position and size of selection box
 #var selected_rect : Rect2:
 	#set(value):
 		#selected_rect = value
 		#check_unit() #will be called with any change of selection
 #array to store every selected unit
-var selected_units: Array = []
+#var units: Array = []
+var selected_units: Array
 #func to filter Units with selection box
+#func register_unit(unit: Node) -> void:
+	#if not units.has(unit):
+		#units.append(unit)
+		#
+#func unregister_unit(unit: Node) -> void:
+	#units.erase(unit)
 
-
-
-#func check_unit():
-	#unit_selected = [] #make an empty array
-	#for unit in get_tree().get_nodes_in_group("Unit"): # get every Unit nodes
-		#if selected_rect.has_point(unit.global_position): # if units position is inside the select box
-			#unit.select() #select unit
-			#unit_selected.append(unit) # add to array
-		#else:
-			#unit.deselect() #deselect the unit if its not present in the selected_rect
-	##print("Unit ", unit_selected)
+#func get_units() -> Array:
+	#return units
+	
+#func select_units(units: Array) -> void:
+	#if selection_box == null:
+		#return
+	#selected_units = selection_box.get_units_in_rect(get_units())
+	#print("Selected units: ", selected_units)
+	
+	
+func check_unit():
+	var rect = selected_rect.abs()
+	#print(rect)
+	for unit in get_parent().get_tree().get_nodes_in_group("Unit"):
+		var unit_sprite: Sprite2D = unit.get_node("Sprite2D")
+		var tex_size = unit_sprite.texture.get_size() * unit_sprite.scale
+		var unit_rect = Rect2(unit.global_position - tex_size / 2, tex_size)
+		#print(unit.name, " ", unit_rect )
+		print("Selection:", rect, " | Unit:", unit_rect)
+		if rect.intersects(unit_rect):
+			print("Selecting ", unit.name)
+			unit.select()
+			selected_units.append(unit)
+	print(selected_units)
+	
 
 ## Function to get formation, square root of the size of units
 func get_formation(tile_pos):
@@ -46,7 +73,7 @@ func get_formation(tile_pos):
 				break #break out of loop when no units left in the array
 	return formation
 	
-#func to set position for every units from formation
+##func to set position for every units from formation
 func move_to_position(layer : TileMapLayer, tile_pos):
 	var formation = get_formation(tile_pos)
 	for i in range(selected_units.size()):
@@ -93,18 +120,25 @@ func delete_selected_units():
 			unit.queue_free()
 		selected_units.clear()
 
-func select_in(group):
+#func select_units(selection_box: Control) -> void:
+	#if not selection_box:
+		#return
+	#selected_units = selection_box.get_units_rect()
+	#print("Selected units:", selected_units)
+#func select_in(group):
+	#for unit in get_tree().get_nodes_in_group("Unit"):
+		#if unit in group:
+			#unit.select()
+		#else:
+			#unit.deselect()
+			
+func get_units_rect(selected: Array) -> Array:
+	var rect = selection_box.get_selection_rect()
+	#var selected: Array = []
+	
 	for unit in get_tree().get_nodes_in_group("Unit"):
-		if unit in group:
-			unit.select()
-		else:
-			unit.deselect()
-
-func select_units(units: Array) -> void:
-	if not selection_box:
-		return
-	selected_units = selection_box.get_units_in_rect(units)
-	print("Selected units: ", selected_units)
-
-func get_units() -> Array:
-	return units
+		
+		if rect.has_point(unit.global_position):
+			selected.append(unit)
+			print(selected)
+	return selected
