@@ -11,36 +11,52 @@ func _process(_delta: float) -> void:
 		queue_redraw()
 
 func _draw():
-	var rect_position = start_pos
-	var rect_size = end_pos - start_pos
-	if rect_size.x < 0:
-		rect_position.x += rect_size.x
-		rect_size.x = abs(rect_size.x)
-	if rect_size.y < 0:
-		rect_position.y += rect_size.y
-		rect_size.y = abs(rect_size.y)
-	selection_rect = Rect2(rect_position, rect_size)
-	draw_rect(selection_rect, Color.RED, false, width)
+	if drawing:	
+		var rect_position = start_pos
+		var rect_size = end_pos - start_pos
+		if rect_size.x < 0:
+			rect_position.x += rect_size.x
+			rect_size.x = abs(rect_size.x)
+		if rect_size.y < 0:
+			rect_position.y += rect_size.y
+			rect_size.y = abs(rect_size.y)
+		selection_rect = Rect2(rect_position, rect_size)
+		draw_rect(selection_rect, Color.RED, false, width)
 
 func _input(event: InputEvent) -> void:
+	#if event is InputEventMouseButton:
+		#if event.button_index == MOUSE_BUTTON_LEFT:
+			#if event.pressed:
+				#start_pos = camera.get_screen_transform().affine_inverse() * get_viewport().get_mouse_position()
+				#drawing = true
+			#elif event.is_released:
+				#end_pos = camera.get_screen_transform().affine_inverse() * get_viewport().get_mouse_position()
+				#drawing = false
+				#queue_redraw()
+	#elif event is InputEventMouseMotion and drawing:
+		#end_pos = camera.get_screen_transform().affine_inverse() * get_viewport().get_mouse_position()
+		#queue_redraw()
+		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.is_pressed():
-			#_draw_rect_clicked()
+			
+			start_pos = get_viewport().get_mouse_position()
+			end_pos = start_pos
 			drawing = true
-			start_pos = camera.get_global_mouse_position()
-			end_pos = camera.get_global_mouse_position()
-			#start_pos = get_viewport().get_mouse_position()
-			#end_pos = get_viewport().get_mouse_position()
+			queue_redraw()
 			print(camera)
 		else:
-			#_draw_rect_released()
+			
+			end_pos = get_viewport().get_mouse_position()
 			drawing = false
 			
 			start_pos = Vector2.ZERO
 			end_pos = Vector2.ZERO
 			queue_redraw()
+			
 	elif event is InputEventMouseMotion and drawing:
-		end_pos = camera.get_global_mouse_position()
+		
+		end_pos = get_viewport().get_mouse_position()
 		queue_redraw()
 		UnitManager.selected_rect = selection_rect
 		
