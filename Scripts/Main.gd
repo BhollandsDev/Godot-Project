@@ -1,15 +1,15 @@
 extends Node2D
 
 @onready var ground = $"Map Generator/NavigationRegion2D/TileMapLayer"
-@onready var units_container = $Units
-@onready var selection_box = $UI/Menu/SelectionBox
+@onready var units_container = $"Units Container"
+@onready var selection_box = $"UI/Menu/SelectionBox"
 
 var start_position = Vector2.ZERO
 var end_position = Vector2.ZERO
 
 func _ready() -> void:
 	UnitManager.spawn_parent = units_container
-	UnitManager.selection_box = $UI/Menu/SelectionBox
+	#UnitManager.selection_box = $UI/Menu/SelectionBox
 #func _input(event: InputEvent) -> void:
 	#if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
 		#selection_box._draw_rect_clicked()

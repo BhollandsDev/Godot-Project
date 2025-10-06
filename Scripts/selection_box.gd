@@ -4,14 +4,21 @@ var start_pos : Vector2
 var end_pos : Vector2
 var width = 3
 var selection_rect: Rect2
-@onready var camera = get_node("/root/Main/CameraController/Camera2D")
+#@onready var camera = get_node("/root/Main/CameraController/Camera2D")
+@onready var units_container = $"/root/Main/Units Container"
+#var unit = units_container.get_children()
+#var units = get_tree().get_nodes_in_group("Unit")
+
+#func _ready() -> void:
+	#add_to_group("Unit")
 
 func _process(_delta: float) -> void:
 	if drawing:
 		queue_redraw()
+	
 
 func _draw():
-	if drawing:	
+	if drawing:
 		var rect_position = start_pos
 		var rect_size = end_pos - start_pos
 		if rect_size.x < 0:
@@ -22,44 +29,90 @@ func _draw():
 			rect_size.y = abs(rect_size.y)
 		selection_rect = Rect2(rect_position, rect_size)
 		draw_rect(selection_rect, Color.RED, false, width)
-
+		#print(selection_rect)
+	
+	#var testrect : Rect2
+	#var test_cam = get_node("/root/Main/CameraController/Camera2D")
+	var testrect_pos = Vector2(80, 80)
+	var testrect_size = Vector2(50, 50)
+	#draw_rectangle(start_pos)
+	
+	#var testpos = get_viewport().make_canvas_position_local(testrect_pos)
+	#print(testpos)
+	draw_rect(Rect2(testrect_pos,testrect_size), Color.YELLOW, false, 3)
+	
 func _input(event: InputEvent) -> void:
-	#if event is InputEventMouseButton:
-		#if event.button_index == MOUSE_BUTTON_LEFT:
-			#if event.pressed:
-				#start_pos = camera.get_screen_transform().affine_inverse() * get_viewport().get_mouse_position()
-				#drawing = true
-			#elif event.is_released:
-				#end_pos = camera.get_screen_transform().affine_inverse() * get_viewport().get_mouse_position()
-				#drawing = false
-				#queue_redraw()
-	#elif event is InputEventMouseMotion and drawing:
-		#end_pos = camera.get_screen_transform().affine_inverse() * get_viewport().get_mouse_position()
-		#queue_redraw()
-		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.is_pressed():
-			
 			start_pos = get_viewport().get_mouse_position()
 			end_pos = start_pos
 			drawing = true
+			
+			#print(units_container.get_children())
+			#print(units.name)
 			queue_redraw()
-			print(camera)
+			#test_test(start_pos)
 		else:
-			
-			end_pos = get_viewport().get_mouse_position()
+			#end_pos = get_viewport().get_mouse_position()
 			drawing = false
-			
 			start_pos = Vector2.ZERO
 			end_pos = Vector2.ZERO
 			queue_redraw()
-			
+			#select_units(get_tree().get_nodes_in_group("Unit"))
 	elif event is InputEventMouseMotion and drawing:
-		
 		end_pos = get_viewport().get_mouse_position()
 		queue_redraw()
-		UnitManager.selected_rect = selection_rect
+		#print(selection_rect)
+		#test_test(end_pos)
+		#UnitManager.selected_rect = selection_rect
+		select_units(selection_rect)
+
+func test_test(local_pos):
+	#var local_pos = Vector2(80, 80)
+	var ie = InputEventMouseButton.new()
+	ie.button_index = MOUSE_BUTTON_LEFT
+	ie.position = get_viewport().get_screen_transform() * get_global_transform_with_canvas() * local_pos
+	ie.global_position = ie.position
+	#Input.parse_input_event(ie)
+	#print(ie.position)
+	
+	print("Global ", ie.global_position, ", EndPos ", end_pos)
+
+func draw_rectangle(local_pos):
+	#var local_pos := Vector2(80, 80)
+	var adjusted_pos =  get_viewport().get_screen_transform() * get_global_transform_with_canvas() * local_pos
+	var testrect_size = Vector2(50, 50)
+	draw_rect(Rect2(adjusted_pos,testrect_size), Color.YELLOW, false, 3)
+	
+	#print("Works")
+	
+	
+
+func select_units(selection):
+	#var camera := get_viewport().get_screen_transform()
+	
+	#var unit_screen_pos = camera *  get_global_transform_with_canvas() * local_pos
+	#if camera == null:
+		#return
+	
+	#var rect := Rect2(start_pos, end_pos - start_pos).abs()
+	
+	for unit in units_container.get_children():
+		var unit_pos = unit.global_position
+		var adjust_unit_pos = get_viewport().get_screen_transform() * get_global_transform_with_canvas() * unit_pos
+		if selection.has_point(adjust_unit_pos):
+			print(unit)
+			
+			#unit.select()
+		#else:
+			#unit.deselect()
 		
+#func test():
+	#if units != null:
+		#
+		#print(units.name)
+	#else:
+		#print("Null")
 	
 		
 		

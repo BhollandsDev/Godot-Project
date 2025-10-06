@@ -10,6 +10,7 @@ var atlas_source_id: int
 var walkable_tiles := {0: true, 1: true, 2: false, 3: false}
 
 func _ready() -> void:
+	
 	noise.seed = randf()
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 		# --- get the atlas source ---

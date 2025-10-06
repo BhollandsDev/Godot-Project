@@ -5,14 +5,16 @@ var selection_box: Node = null
 #vars for instancing Units
 var target_scene = preload("res://Scenes/unit.tscn")
 var spawn_parent: Node2D = null
+
 var spawn_start = Vector2(80, 80)
 var spawn_offset = Vector2(20, 20)
 var units_per_row = 5
 var occupied_positions: Array = []
-var selected_rect: Rect2:
-	set(value):
-		selected_rect = value
-		check_unit()
+#var selected_rect: Rect2:
+	#set(value):
+		#selected_rect = value
+		#check_unit()
+		
 		#print(selected_units)
 		#print(selected_rect)
 #var to store position and size of selection box
@@ -41,20 +43,20 @@ var selected_units: Array
 	#print("Selected units: ", selected_units)
 	
 	
-func check_unit():
-	var rect = selected_rect.abs()
-	#print(rect)
-	for unit in get_parent().get_tree().get_nodes_in_group("Unit"):
-		var unit_sprite: Sprite2D = unit.get_node("Sprite2D")
-		var tex_size = unit_sprite.texture.get_size() * unit_sprite.scale
-		var unit_rect = Rect2(unit.global_position - tex_size / 2, tex_size)
-		#print(unit.name, " ", unit_rect )
-		print("Selection:", rect, " | Unit:", unit_rect)
-		if rect.intersects(unit_rect):
-			print("Selecting ", unit.name)
-			unit.select()
-			selected_units.append(unit)
-	print(selected_units)
+#func check_unit():
+	#var rect = selected_rect.abs()
+	##print(rect)
+	#for unit in get_parent().get_tree().get_nodes_in_group("Unit"):
+		#var unit_sprite: Sprite2D = unit.get_node("Sprite2D")
+		#var tex_size = unit_sprite.texture.get_size() * unit_sprite.scale
+		#var unit_rect = Rect2(unit.global_position - tex_size / 2, tex_size)
+		##print(unit.name, " ", unit_rect )
+		#print("Selection:", rect, " | Unit:", unit_rect)
+		#if rect.intersects(unit_rect):
+			#print("Selecting ", unit.name)
+			#unit.select()
+			#selected_units.append(unit)
+	#print(selected_units)
 	
 
 ## Function to get formation, square root of the size of units
@@ -132,13 +134,13 @@ func delete_selected_units():
 		#else:
 			#unit.deselect()
 			
-func get_units_rect(selected: Array) -> Array:
-	var rect = selection_box.get_selection_rect()
-	#var selected: Array = []
-	
-	for unit in get_tree().get_nodes_in_group("Unit"):
-		
-		if rect.has_point(unit.global_position):
-			selected.append(unit)
-			print(selected)
-	return selected
+#func get_units_rect(selected: Array) -> Array:
+	#var rect = selection_box.get_selection_rect()
+	##var selected: Array = []
+	#
+	#for unit in get_tree().get_nodes_in_group("Unit"):
+		#
+		#if rect.has_point(unit.global_position):
+			#selected.append(unit)
+			#print(selected)
+	#return selected

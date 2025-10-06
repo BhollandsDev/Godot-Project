@@ -10,7 +10,7 @@ script = ExtResource("1_rgh2o")
 
 [node name="Map Generator" parent="." instance=ExtResource("2_rgh2o")]
 
-[node name="Units" type="Node2D" parent="."]
+[node name="Units Container" type="Node2D" parent="."]
 
 [node name="CameraController" parent="." instance=ExtResource("5_pbw6q")]
 

@@ -22,6 +22,7 @@ var select_mode : bool = false:
 		
 #setting the name to Unit
 func _ready() -> void:
+	add_to_group("Unit")
 	name = "Unit"
 	connect("tree_exited", Callable(self, "_on_tree_exited"))
 	previous_position = position
@@ -31,7 +32,7 @@ func set_previous_position(pos: Vector2):
 	previous_position = pos
 #unit selection box is getting drawn
 func _draw():
-	draw_rect(selection_rect, Color.YELLOW, false, selection_width)
+	draw_rect(selection_rect, Color.GREEN, false, selection_width)
 
 #get the next position through Navigation Agent
 func _physics_process(delta: float) -> void:
