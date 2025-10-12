@@ -142,9 +142,6 @@ collision_mask = 0
 input_pickable = true
 script = ExtResource("1_yjw0f")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_c86kq")
-
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_8omp6")
 hframes = 8
@@ -154,6 +151,9 @@ frame = 5
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 path_desired_distance = 1.0
 target_desired_distance = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_c86kq")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

@@ -17,6 +17,10 @@ func _ready() -> void:
 	#var sources = tilemap.tile_set.get_source_id(0)
 	#atlas_source_id = sources
 	generate_chunk(Vector2i(0, 0))
+	
+
+
+
 
 func _process(_delta: float) -> void:
 	var camera_pos = get_viewport().get_camera_2d().position

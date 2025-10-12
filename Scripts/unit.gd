@@ -1,6 +1,7 @@
 extends CharacterBody2D
 @onready var nav_agent = $NavigationAgent2D
 @onready var animation_player = $AnimationPlayer
+@onready var static_view = $"../.."
 #set speed
 var speed = 100
 # every unit has their own selection box when selected
@@ -33,6 +34,14 @@ func set_previous_position(pos: Vector2):
 #unit selection box is getting drawn
 func _draw():
 	draw_rect(selection_rect, Color.GREEN, false, selection_width)
+	
+	var test := true
+	if test == true:
+		var test_screen = static_view
+		#var testrect_pos =  Vector2(80, 80)
+		test_screen.position = Vector2(80, 80)
+		var testrect_size = Vector2(10, 10)
+		draw_rect(Rect2(test_screen.position,testrect_size), Color.GREEN, false, 3)
 
 #get the next position through Navigation Agent
 func _physics_process(delta: float) -> void:

@@ -1,0 +1,51 @@
+[gd_scene load_steps=3 format=3 uid="uid://dphq41d7klajd"]
+
+[ext_resource type="Script" uid="uid://b7m8o1jwyyxae" path="res://Scripts/menu.gd" id="1_1rerr"]
+[ext_resource type="Script" uid="uid://cucxbhijs4ylv" path="res://Scripts/selection_box.gd" id="2_xhh6f"]
+
+[node name="User Interface" type="CanvasLayer"]
+
+[node name="Selection Manager" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_xhh6f")
+
+[node name="Menu" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("1_1rerr")
+
+[node name="Add" type="Button" parent="Menu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -19.5
+offset_right = 19.5
+offset_bottom = 31.0
+grow_horizontal = 2
+focus_mode = 0
+text = "Add"
+
+[node name="Delete" type="Button" parent="Menu"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -75.0
+offset_bottom = 35.0
+grow_horizontal = 0
+focus_mode = 0
+text = "Delete"
+
+[node name="Edge Scrolling Toggle" type="CheckButton" parent="Menu"]
+layout_mode = 1
+offset_right = 156.0
+offset_bottom = 31.0
+text = "Edge Scrolling"
+
+[connection signal="toggled" from="Menu/Edge Scrolling Toggle" to="Menu" method="_on_edge_scrolling_toggle_toggled"]

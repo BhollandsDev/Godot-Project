@@ -23,6 +23,10 @@ UnitManager="*res://Scenes/unit_manager.tscn"
 
 window/stretch/mode="viewport"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
+
 [input]
 
 move_left={

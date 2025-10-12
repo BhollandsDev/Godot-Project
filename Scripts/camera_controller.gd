@@ -4,7 +4,7 @@ extends Node2D
 @export var scroll_speed: float = 400.0 # Edge scroll speed
 @export var edge_dist: int = 1       # Pixels from screen edge to trigger scrolling
 @onready var camera: Camera2D = $Camera2D
-
+#@export var camera_var: Camera2D = $Camera2D
 var edge_scroll: bool 
 
 func _ready() -> void:
@@ -52,4 +52,5 @@ func get_edge_scroll_input() -> Vector2:
 	return move
 
 	
-		
+
+	

@@ -5,9 +5,11 @@ var selection_box: Node = null
 #vars for instancing Units
 var target_scene = preload("res://Scenes/unit.tscn")
 var spawn_parent: Node2D = null
-
+@onready var static_view = $".."
 var spawn_start = Vector2(80, 80)
+
 var spawn_offset = Vector2(20, 20)
+#var spawn_start_world = get_global_transform_with_canvas() * spawn_start
 var units_per_row = 5
 var occupied_positions: Array = []
 #var selected_rect: Rect2:
@@ -57,7 +59,7 @@ var selected_units: Array
 			#unit.select()
 			#selected_units.append(unit)
 	#print(selected_units)
-	
+
 
 ## Function to get formation, square root of the size of units
 func get_formation(tile_pos):
@@ -80,7 +82,7 @@ func move_to_position(layer : TileMapLayer, tile_pos):
 	var formation = get_formation(tile_pos)
 	for i in range(selected_units.size()):
 		selected_units[i].move_to(layer.map_to_local(formation[i]))
-		
+		#selected_units[i].move_to(layer.local_to_map(formation[i]))
 func add_unit():
 	if not target_scene or not spawn_parent:
 		push_error("UnitManger: target_scene or spawn_parent not set")
@@ -93,11 +95,16 @@ func add_unit():
 		@warning_ignore("integer_division")
 		var row = int(index / units_per_row)
 		var col = index % units_per_row
+		#var static_positions = static_view.position
+		#var test = static_view.to_global(Vector2(spawn_offset.x * col,spawn_offset.y * row))
+		#static_view = spawn_start + Vector2(spawn_offset.x * col,spawn_offset.y * row)
+		#positions = static_view
+		print(test)
 		positions = spawn_start + Vector2(spawn_offset.x * col, spawn_offset.y * row)
 		if not position_occupied(positions):
 			break
 		index += 1
-	unit.position = positions
+	unit.position = positions ##check!! might be cause for node positions
 	spawn_parent.add_child(unit)
 	occupied_positions.append(positions)
 	if unit.has_method("set_previous_position"):
@@ -144,3 +151,23 @@ func delete_selected_units():
 			#selected.append(unit)
 			#print(selected)
 	#return selected
+
+func _draw() -> void:
+	var test := true
+	if test == true:
+		#var test_screen = static_view
+		var testrect_pos =  Vector2(80, 80)
+		#test_screen = Vector2(80, 80)
+		var testrect_size = Vector2(10, 10)
+		draw_rect(Rect2(testrect_pos,testrect_size), Color.GREEN, false, 3)
+
+func test():
+	var world_pos = get_global_mouse_position()
+	var camera_pos = get_local_mouse_position()
+	print("selection world position, ",world_pos,", selection camera position, ", camera_pos)
+	#print(units_container.get_children())
+	
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.is_pressed():
+			test()
