@@ -13,7 +13,7 @@ script = ExtResource("1_kry3j")
 
 [node name="CameraController" parent="." instance=ExtResource("2_21xkr")]
 
-[node name="Units Container" type="Node2D" parent="."]
+[node name="Units Container" type="Node2D" parent="." groups=["UnitsContainer"]]
 script = ExtResource("3_6bp64")
 
 [node name="User Interface" parent="." instance=ExtResource("4_344ge")]

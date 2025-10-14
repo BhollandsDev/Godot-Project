@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 UnitManager="*res://Scenes/unit_manager.tscn"
+UnitManagerTesting="res://Scripts/unit_manager_testing.gd"
 
 [display]
 
@@ -26,6 +27,13 @@ window/stretch/mode="viewport"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
+
+[global_group]
+
+MainCamera=""
+UnitsContainer=""
+Units="Units Group"
+"Selected Units"=""
 
 [input]
 

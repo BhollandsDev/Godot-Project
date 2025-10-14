@@ -12,6 +12,7 @@ var end_position = Vector2.ZERO
 	
 func _ready() -> void:
 	UnitManager.spawn_parent = units_container
+	#UnitManagerTesting.spawn_parent.global_position = Vector2(80, 80)
 	#UnitManager.selection_box = $UI/Menu/SelectionBox
 #func _input(event: InputEvent) -> void:
 	#if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
@@ -31,14 +32,14 @@ func _ready() -> void:
 	#
 	#return tile_pos
 	
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.is_pressed():
-			pass
-			#test()
+#func _input(event: InputEvent) -> void:
+	#if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		#if event.is_pressed():
+			#pass
+			##test()
 
-func test():
-	var world_pos = get_global_mouse_position()
-	var camera_pos = get_viewport().get_mouse_position()
-	print("world position, ",world_pos,", camera position, ", camera_pos)
-	print(ground.position)
+#func test():
+	#var world_pos = get_global_mouse_position()
+	#var camera_pos = get_viewport().get_mouse_position()
+	#print("world position, ",world_pos,", camera position, ", camera_pos)
+	#print(ground.position)

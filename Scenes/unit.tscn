@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://clx3f8140u1uf"]
 
-[ext_resource type="Script" uid="uid://c68tccm4w3p5e" path="res://Scripts/unit.gd" id="1_yjw0f"]
+[ext_resource type="Script" uid="uid://c68tccm4w3p5e" path="res://Scripts/unit.gd" id="1_8omp6"]
 [ext_resource type="Texture2D" uid="uid://d0yg1biiac8wl" path="res://Sprites/run.png" id="2_8omp6"]
 [ext_resource type="Texture2D" uid="uid://cagps604db8ks" path="res://Sprites/idle.png" id="3_lpvrq"]
 
@@ -137,10 +137,11 @@ _data = {
 &"run": SubResource("Animation_4ne6x")
 }
 
-[node name="Unit" type="CharacterBody2D" groups=["Unit"]]
+[node name="Unit" type="CharacterBody2D" groups=["Units"]]
+collision_layer = 0
 collision_mask = 0
 input_pickable = true
-script = ExtResource("1_yjw0f")
+script = ExtResource("1_8omp6")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_8omp6")

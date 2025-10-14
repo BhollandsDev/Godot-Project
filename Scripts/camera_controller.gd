@@ -9,6 +9,7 @@ var edge_scroll: bool
 
 func _ready() -> void:
 	add_to_group("camera_controller")
+	camera.make_current()
 func _process(delta: float) -> void:
 	move_camera(delta)
 

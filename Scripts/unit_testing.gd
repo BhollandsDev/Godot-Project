@@ -1,7 +1,7 @@
 extends CharacterBody2D
 @onready var nav_agent = $NavigationAgent2D
 @onready var animation_player = $AnimationPlayer
-#@onready var static_view = $"../.."
+@onready var static_view = $"../.."
 #set speed
 @export var speed = 100
 # every unit has their own selection box when selected
@@ -35,6 +35,13 @@ func set_previous_position(pos: Vector2):
 func _draw():
 	draw_rect(selection_rect, Color.GREEN, false, selection_width)
 	
+	#var test := true
+	#if test == true:
+		#var test_screen = static_view
+		##var testrect_pos =  Vector2(80, 80)
+		#test_screen.position = Vector2(80, 80)
+		#var testrect_size = Vector2(10, 10)
+		#draw_rect(Rect2(test_screen.position,testrect_size), Color.GREEN, false, 3)
 
 #get the next position through Navigation Agent
 func _physics_process(delta: float) -> void:
@@ -65,13 +72,11 @@ func deselect():
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			select_mode = true
-			for unit in get_tree().get_nodes_in_group("Selected Units"):
-			#for unit in UnitManager.selected_units:
+			for unit in UnitManagerTesting.selected_units:
 				if unit != self:
-					unit.remove_from_group("Selected Units")
 					unit.deselect()
-			#UnitManager.selected_units = [self] #update the selected unit from the Unit manger
-			self.add_to_group("Selected Units")
+			UnitManagerTesting.selected_units = [self] #update the selected unit from the Unit manger
+
 #func to set target position
 func move_to(target_position):
 	nav_agent.target_position = target_position
@@ -86,12 +91,11 @@ func animation(_delta):
 		elif velocity.x > 0:
 			$Sprite2D.flip_h = false
 
-#func _on_tree_exited():
-	#if self in get_tree().get_nodes_in_group("Selected Units"):
-		#self.remove_from_group("Selected Units")
-		##UnitManager.selected_units.erase(self)
+func _on_tree_exited():
+	if self in UnitManagerTesting.selected_units:
+		UnitManagerTesting.selected_units.erase(self)
 func _on_unit_moved():
-	UnitManager.update_unit_position(previous_position, position)
+	UnitManagerTesting.update_unit_position(previous_position, position)
 	previous_position = position
 	
 func _on_stop_moving():
