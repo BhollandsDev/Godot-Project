@@ -3,12 +3,10 @@ var drawing = false
 var start_pos : Vector2
 var end_pos : Vector2
 @onready var ground = get_node("../../Map Generator/NavigationRegion2D/TileMapLayer")
-#var width = 3
-#var selection_rect:= Rect2()
-#@onready var camera = get_node("/root/CameraController")
+
 var selection_rect_local = Rect2()
 @onready var camera := get_tree().get_first_node_in_group("MainCamera")
-#@onready var static_view = $"../.."
+
 @onready var units_container := get_tree().get_first_node_in_group("UnitsContainer")
 @export var rect_width := int(3)
 @export var rect_color := Color(0.639, 0.0, 0.0, 1.0)
@@ -35,7 +33,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				print("Units = ",get_tree().get_nodes_in_group("Units"))
 				queue_redraw()
 		if event.pressed and event.button_index == MOUSE_BUTTON_RIGHT: #right click will move units to mouse position
-			UnitManager.move_to_position(ground, get_tile_pos(get_global_mouse_position()))
+			UnitManager.move_to_position(ground, get_tile_pos(camera.get_global_mouse_position()))
 			print("right pressed")
 	if event is InputEventMouseMotion and drawing:
 		end_pos = get_local_mouse_position()

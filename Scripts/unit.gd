@@ -1,9 +1,9 @@
 extends CharacterBody2D
 @onready var nav_agent = $NavigationAgent2D
 @onready var animation_player = $AnimationPlayer
-#@onready var static_view = $"../.."
+#@onready var camera := get_tree().get_first_node_in_group("MainCamera")
 #set speed
-@export var speed = 100
+@export var speed : int
 # every unit has their own selection box when selected
 var selection_rect : Rect2
 var selection_width : int
@@ -38,7 +38,7 @@ func _draw():
 
 #get the next position through Navigation Agent
 func _physics_process(delta: float) -> void:
-#	return if navigation is finished
+#	#	return if navigation is finished
 	if nav_agent.is_navigation_finished():
 		#play idle when navigation stops
 		if animation_player.current_animation != "idle":
@@ -47,12 +47,14 @@ func _physics_process(delta: float) -> void:
 	#call animation flip function
 	animation(delta)
 	var next_position = nav_agent.get_next_path_position()
-	var direction = (next_position - global_position). normalized()
+	var direction = (next_position - global_position).normalized()
 	velocity = round(direction * speed)
-	#print(velocity)
+	var test = position.distance_to(next_position)
+	print(test)
 	move_and_slide()
-	if position != previous_position:
-		_on_unit_moved()
+
+	
+	
 #func to select the unit
 func select():
 	select_mode = true
@@ -62,10 +64,10 @@ func deselect():
 	select_mode = false
 
 #clicking unit individually will turn on select mode
-func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			select_mode = true
-			for unit in get_tree().get_nodes_in_group("Selected Units"):
+			for unit in get_tree().get_nodes_in_group("Units"):
 			#for unit in UnitManager.selected_units:
 				if unit != self:
 					unit.remove_from_group("Selected Units")
