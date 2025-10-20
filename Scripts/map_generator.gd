@@ -8,16 +8,16 @@ var noise := FastNoiseLite.new()
 
 const CHUNK_SIZE := 32
 var generated_chunks := {}
-var atlas_source_id: int
+#var atlas_source_id: int
 	# --- Keep track of which tiles are walkable ---
 var walkable_tiles := {0: true, 1: true, 2: false, 3: false}
 
 func _ready() -> void:
 	randomize()
 	noise.seed = randi()
-	print(tilemap)
+	
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
-		# --- get the atlas source ---
+	# --- get the atlas source ---
 	#var sources = tilemap.tile_set.get_source_id(0)
 	#atlas_source_id = sources
 	generate_chunk(Vector2i(0, 0))
@@ -55,7 +55,7 @@ func generate_chunk(chunk_coords: Vector2i) -> void:
 			var min_range = 0.0
 			var max_range = 100.0
 			var custom_range_noise = min_range + normalized_noise * (max_range - min_range)
-			var atlas_coords := Vector2i(0, 0) 
+			var atlas_coords : Vector2i 
 			#print(custom_range_noise)
 			if custom_range_noise > 65.0 and custom_range_noise < 100.00:
 				atlas_coords = Vector2i(1, 0) # --- Forest (not walkable) ---
@@ -66,6 +66,23 @@ func generate_chunk(chunk_coords: Vector2i) -> void:
 			elif custom_range_noise <  35.0 and custom_range_noise > 0.0:
 				atlas_coords = Vector2i(1, 1) # --- Deep water (not walkable) ---
 			
-			tilemap.set_cell(Vector2i(world_x, world_y), 0, atlas_coords)
+			var cell := Vector2i(world_x, world_y)
+			
+			tilemap.set_cell(cell, 0,atlas_coords,randomized_rotation())
+			
 	generated_chunks[chunk_coords] = true
-	print(generated_chunks.size())
+	
+func randomized_rotation():
+	var raw_noise = RandomNumberGenerator.new()
+	raw_noise.randomize()
+	raw_noise.randi_range(1,5)
+	var choice = raw_noise.randi_range(0,3)
+	match choice:
+		0:
+			return 0
+		1:
+			return TileSetAtlasSource.TRANSFORM_TRANSPOSE | TileSetAtlasSource.TRANSFORM_FLIP_H
+		2:
+			return TileSetAtlasSource.TRANSFORM_FLIP_H | TileSetAtlasSource.TRANSFORM_FLIP_V
+		3:
+			return TileSetAtlasSource.TRANSFORM_TRANSPOSE | TileSetAtlasSource.TRANSFORM_FLIP_V

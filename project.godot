@@ -13,12 +13,10 @@ config_version=5
 config/name="Control Units Edited"
 run/main_scene="uid://c0jlaqwhu7kf1"
 config/features=PackedStringArray("4.5", "Forward Plus")
-config/icon="res://icon.svg"
 
 [autoload]
 
 UnitManager="*res://Scenes/unit_manager.tscn"
-UnitManagerTesting="res://Scripts/unit_manager_testing.gd"
 
 [display]
 
