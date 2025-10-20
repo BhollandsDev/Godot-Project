@@ -17,11 +17,7 @@ script = ExtResource("3_6bp64")
 
 [node name="CanvasLayer" type="Node2D" parent="."]
 
-[node name="Control" type="Control" parent="CanvasLayer"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Selection Draw" type="Node2D" parent="CanvasLayer" groups=["SelectionManager"]]
 script = ExtResource("3_21xkr")
 
 [node name="CameraController" parent="." instance=ExtResource("2_21xkr")]

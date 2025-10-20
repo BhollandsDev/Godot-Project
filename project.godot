@@ -34,6 +34,7 @@ MainCamera=""
 UnitsContainer=""
 Units="Units Group"
 "Selected Units"=""
+SelectionManager=""
 
 [input]
 

@@ -1,29 +1,39 @@
-extends Control
+extends Node2D
 
 @onready var ground = get_node("../../Map Generator/NavigationRegion2D/TileMapLayer")
 @onready var units_container := get_tree().get_first_node_in_group("UnitsContainer")
-@export var rect_width := int(3)
+@export var min_rect_size := 10
+@export var rect_width := 3
 @export var rect_color := Color(0.639, 0.0, 0.0, 1.0)
 var selection_rect_local = Rect2()
 var drawing = false
 var start_pos : Vector2
 var end_pos : Vector2
-#func _ready() -> void:
-	#UnitManager.selection_manager = self
+
+func _ready() -> void:
+	process_priority = 1
 	
-#
-func _draw():
+func _process(_delta):
 	if drawing:
-		selection_rect_local = Rect2(start_pos, end_pos - start_pos).abs()
-		draw_rect(selection_rect_local, rect_color, false, rect_width)
+		queue_redraw()
+
+
+func _draw():
+	if drawing and start_pos != Vector2.ZERO and end_pos != Vector2.ZERO:
+		if drawing and start_pos.distance_to(end_pos) > min_rect_size:
+			selection_rect_local = Rect2(start_pos, end_pos - start_pos).abs()
+			draw_rect(selection_rect_local, rect_color, false, rect_width)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			start_pos = get_global_mouse_position()
 			drawing = true
+			queue_redraw()
 		elif event.is_released():
 			drawing = false
+			start_pos = Vector2.ZERO
+			end_pos = Vector2.ZERO
 			queue_redraw()
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		UnitManager.move_to_position(ground, get_tile_pos(get_global_mouse_position()))
