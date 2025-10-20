@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var ground = get_node("../../Map Generator/NavigationRegion2D/TileMapLayer")
+@onready var ground = get_node("../../Map Generator/NavigationRegion2D/Main TileMap World")
 @onready var units_container := get_tree().get_first_node_in_group("UnitsContainer")
 @export var min_rect_size := 10
 @export var rect_width := 3

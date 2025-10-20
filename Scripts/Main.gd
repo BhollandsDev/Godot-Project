@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var ground = $"Map Generator/NavigationRegion2D/TileMapLayer"
+#@onready var ground = $"Map Generator/NavigationRegion2D/TileMapLayer"
 
 @onready var units_container = $"Units Container"
 #@onready var selection_box = $"UI/Menu/SelectionBox"

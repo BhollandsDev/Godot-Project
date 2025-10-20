@@ -1,9 +1,12 @@
 extends Node2D
 
-@onready var tilemap: TileMapLayer = $NavigationRegion2D/TileMapLayer
+@onready var tilemap: TileMapLayer = %"Main TileMap World"
 var noise := FastNoiseLite.new()
 
-const CHUNK_SIZE := 64
+# 1 tile = 32x32 pixels
+# 1 chunk = 32x32 tiles
+
+const CHUNK_SIZE := 32
 var generated_chunks := {}
 var atlas_source_id: int
 	# --- Keep track of which tiles are walkable ---
@@ -12,7 +15,7 @@ var walkable_tiles := {0: true, 1: true, 2: false, 3: false}
 func _ready() -> void:
 	randomize()
 	noise.seed = randi()
-	
+	print(tilemap)
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 		# --- get the atlas source ---
 	#var sources = tilemap.tile_set.get_source_id(0)
@@ -55,14 +58,14 @@ func generate_chunk(chunk_coords: Vector2i) -> void:
 			var atlas_coords := Vector2i(0, 0) 
 			#print(custom_range_noise)
 			if custom_range_noise > 65.0 and custom_range_noise < 100.00:
-				atlas_coords = Vector2i(0, 1) # --- Forest (not walkable) ---
+				atlas_coords = Vector2i(1, 0) # --- Forest (not walkable) ---
 			elif custom_range_noise > 50.0 and custom_range_noise < 65.0:
 				atlas_coords = Vector2i(0, 0) # --- Ground (walkable) ---
 			elif custom_range_noise < 50.0 and custom_range_noise > 35.0:
-				atlas_coords = Vector2i(1, 0) # --- Shore (walkable) ---
+				atlas_coords = Vector2i(0, 1) # --- Shore (walkable) ---
 			elif custom_range_noise <  35.0 and custom_range_noise > 0.0:
 				atlas_coords = Vector2i(1, 1) # --- Deep water (not walkable) ---
 			
 			tilemap.set_cell(Vector2i(world_x, world_y), 0, atlas_coords)
 	generated_chunks[chunk_coords] = true
-	
+	print(generated_chunks.size())
