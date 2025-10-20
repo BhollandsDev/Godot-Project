@@ -6,4 +6,3 @@
 script = ExtResource("1_wovnw")
 
 [node name="Camera2D" type="Camera2D" parent="." groups=["MainCamera"]]
-anchor_mode = 0

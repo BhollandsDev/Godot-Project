@@ -1,17 +1,40 @@
 extends Node2D
 
-@export var speed: float = 400.0  # pixels per second
+@export var zoom_speed:  int = 1
+@export var max_zoom_out:   int = 1
+@export var max_zoom_in: int = 1
+@export var speed = 400.0  # pixels per second
 @export var scroll_speed: float = 400.0 # Edge scroll speed
 @export var edge_dist: int = 1       # Pixels from screen edge to trigger scrolling
-@onready var camera: Camera2D = $Camera2D
+
+var target_zoom := Vector2.ONE
+
+@onready var camera = $Camera2D
+
 #@export var camera_var: Camera2D = $Camera2D
 var edge_scroll: bool 
 
 func _ready() -> void:
 	add_to_group("camera_controller")
-	camera.make_current()
+	print(camera.zoom)
+	
+
+	
 func _process(delta: float) -> void:
 	move_camera(delta)
+	var selection_manager = get_tree().get_first_node_in_group("SelectionManager")
+	if selection_manager:
+		selection_manager.queue_redraw()
+	
+
+	
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_zoom_toward_mouse(zoom_speed)
+		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_zoom_toward_mouse(-zoom_speed)
+
 
 	# --- Main camera movement handler ---
 func move_camera(delta: float) -> void:
@@ -51,7 +74,12 @@ func get_edge_scroll_input() -> Vector2:
 	elif mouse_pos.y >= viewport_size.y - edge_dist:
 		move.y += 1
 	return move
-
+		
+func _zoom_toward_mouse(delta: float, ) -> void:
+	var zoom_speed_multiple :=  Vector2(.1 * delta, .1 * delta)
+	var max_zoom_out_multiple :=  Vector2(.5 * max_zoom_out, .5 * max_zoom_out)
+	var max_zoom_in_multiple := Vector2(2.5 * max_zoom_in, 2.5 * max_zoom_in)
+	var new_zoom = clamp(camera.zoom + zoom_speed_multiple, max_zoom_out_multiple, max_zoom_in_multiple)
 	
-
-	
+	camera.zoom =  new_zoom
+	#print(new_zoom)
