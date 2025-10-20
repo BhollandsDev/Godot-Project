@@ -49,8 +49,7 @@ func _physics_process(delta: float) -> void:
 	var next_position = nav_agent.get_next_path_position()
 	var direction = (next_position - global_position).normalized()
 	velocity = round(direction * speed)
-	var test = position.distance_to(next_position)
-	print(test)
+	
 	move_and_slide()
 
 	

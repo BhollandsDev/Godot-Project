@@ -1,19 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dphq41d7klajd"]
+[gd_scene load_steps=2 format=3 uid="uid://dphq41d7klajd"]
 
 [ext_resource type="Script" uid="uid://b7m8o1jwyyxae" path="res://Scripts/menu.gd" id="1_1rerr"]
-[ext_resource type="Script" uid="uid://cucxbhijs4ylv" path="res://Scripts/selection_manager.gd" id="2_xhh6f"]
 
 [node name="User Interface" type="CanvasLayer"]
-
-[node name="Selection Manager" type="Control" parent="."]
-unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("2_xhh6f")
-rect_width = 4
-rect_color = Color(1, 1, 1, 1)
 
 [node name="Menu" type="Control" parent="."]
 layout_mode = 3
