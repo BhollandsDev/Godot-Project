@@ -1,34 +1,59 @@
 extends Node2D
 
-@onready var tilemap: TileMapLayer = %"Main TileMap World"
-var noise := FastNoiseLite.new()
 
-# 1 tile = 32x32 pixels
-# 1 chunk = 32x32 tiles
+
+
+@onready var water_tileset: TileMapLayer = $water
+@onready var ground_tileset: TileMapLayer = $ground
+@onready var ground_2_tileset: TileMapLayer = $ground2
+
+
+
+@export var noise := FastNoiseLite.new()
+
+
+var source_id := 0
+var terrain_set := 0
+
+
+var water_tiles_array : Array
+var water_terrain_int := 0
+var ground_tiles_array : Array
+var ground_terrain_int := 1
+var noise_val_array : Array
+
+var water_tiles :=[
+	Vector2i(13,13),
+	Vector2i(14,13),
+	Vector2i(15,13),
+	Vector2i(16,13)
+]
+
+#var ground_tiles := [
+	#Vector2i(2,1),
+	#Vector2i(3,1),
+	#Vector2i(4,1),
+	##Vector2i(4,3)
+	##Vector2i(4,2),
+	##Vector2i(1,3)
+#]
+
+const TILE_SIZE_SETTER := 32
 
 const CHUNK_SIZE := 32
 var generated_chunks := {}
-#var atlas_source_id: int
-	# --- Keep track of which tiles are walkable ---
-var walkable_tiles := {0: true, 1: true, 2: false, 3: false}
+
 
 func _ready() -> void:
 	randomize()
+	
+	#noise = noise_text.noise
 	noise.seed = randi()
 	
-	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
-	# --- get the atlas source ---
-	#var sources = tilemap.tile_set.get_source_id(0)
-	#atlas_source_id = sources
-	generate_chunk(Vector2i(0, 0))
 	
-
-
-
-
 func _process(_delta: float) -> void:
 	var camera_pos = get_viewport().get_camera_2d().position
-	var tile_size = tilemap.tile_set.tile_size
+	var tile_size = water_tileset.tile_set.tile_size
 	var chunk_coords = Vector2i(
 		floor(camera_pos.x / (CHUNK_SIZE * tile_size.x)),
 		floor(camera_pos.y / (CHUNK_SIZE * tile_size.y))
@@ -40,49 +65,21 @@ func _process(_delta: float) -> void:
 			if not generated_chunks.has(c):
 				generate_chunk(c)
 	
+	
 func generate_chunk(chunk_coords: Vector2i) -> void:
 	var start_x = chunk_coords.x * CHUNK_SIZE
 	var start_y = chunk_coords.y * CHUNK_SIZE
-	
+
 	for x in range(CHUNK_SIZE):
 		for y in range(CHUNK_SIZE):
 			var world_x = start_x + x
-			var world_y = start_y + y 
-			var raw_noise = noise.get_noise_2d(world_x, world_y)
-			#print("raw noise value", raw_noise)
-			var normalized_noise = (raw_noise + 1.0) / 2.0
-			#print("normalized noise", normalized_noise)
-			var min_range = 0.0
-			var max_range = 100.0
-			var custom_range_noise = min_range + normalized_noise * (max_range - min_range)
-			var atlas_coords : Vector2i 
-			#print(custom_range_noise)
-			if custom_range_noise > 65.0 and custom_range_noise < 100.00:
-				atlas_coords = Vector2i(1, 0) # --- Forest (not walkable) ---
-			elif custom_range_noise > 50.0 and custom_range_noise < 65.0:
-				atlas_coords = Vector2i(0, 0) # --- Ground (walkable) ---
-			elif custom_range_noise < 50.0 and custom_range_noise > 35.0:
-				atlas_coords = Vector2i(0, 1) # --- Shore (walkable) ---
-			elif custom_range_noise <  35.0 and custom_range_noise > 0.0:
-				atlas_coords = Vector2i(1, 1) # --- Deep water (not walkable) ---
-			
+			var world_y = start_y + y
 			var cell := Vector2i(world_x, world_y)
-			
-			tilemap.set_cell(cell, 0,atlas_coords,randomized_rotation())
-			
+			var noise_val: float = noise.get_noise_2d(world_x,world_y)
+			water_tileset.set_cell(cell, source_id, water_tiles.pick_random())
+			if noise_val >= 0.0:
+				ground_tiles_array.append(Vector2i(world_x,world_y))
+				
+	ground_tileset.set_cells_terrain_connect(ground_tiles_array,terrain_set, ground_terrain_int,false)
+		
 	generated_chunks[chunk_coords] = true
-	
-func randomized_rotation():
-	var raw_noise = RandomNumberGenerator.new()
-	raw_noise.randomize()
-	raw_noise.randi_range(1,5)
-	var choice = raw_noise.randi_range(0,3)
-	match choice:
-		0:
-			return 0
-		1:
-			return TileSetAtlasSource.TRANSFORM_TRANSPOSE | TileSetAtlasSource.TRANSFORM_FLIP_H
-		2:
-			return TileSetAtlasSource.TRANSFORM_FLIP_H | TileSetAtlasSource.TRANSFORM_FLIP_V
-		3:
-			return TileSetAtlasSource.TRANSFORM_TRANSPOSE | TileSetAtlasSource.TRANSFORM_FLIP_V

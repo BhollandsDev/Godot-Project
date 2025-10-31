@@ -1,6 +1,8 @@
 extends Node2D
 
-@onready var ground = get_node("../../Map Generator/NavigationRegion2D/Main TileMap World")
+@onready var water = get_node("../../Map Generator/water")
+
+
 @onready var units_container := get_tree().get_first_node_in_group("UnitsContainer")
 @export var min_rect_size := 10
 @export var rect_width := 3
@@ -24,6 +26,7 @@ func _draw():
 			selection_rect_local = Rect2(start_pos, end_pos - start_pos).abs()
 			draw_rect(selection_rect_local, rect_color, false, rect_width)
 
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
@@ -36,28 +39,20 @@ func _unhandled_input(event: InputEvent) -> void:
 			end_pos = Vector2.ZERO
 			queue_redraw()
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		UnitManager.move_to_position(ground, get_tile_pos(get_global_mouse_position()))
+		UnitManager.move_to_position(water, get_tile_pos(get_global_mouse_position()))
 	if event is InputEventMouseMotion and drawing:
 		end_pos = get_global_mouse_position()
 		get_selection(selection_rect_local)
 		queue_redraw()
 		
-		
-
-		
-#func _convert_selection_rect(screen_rect: Rect2):
-	#var canvas_transform_inverse = camera.get_canvas_transform().affine_inverse()
-	#var world_pos_top_left = canvas_transform_inverse * screen_rect.position
-	#var world_pos_bottom_right = canvas_transform_inverse * (screen_rect.position + screen_rect.size)
-	#var global_rect = Rect2(world_pos_top_left, world_pos_bottom_right - world_pos_top_left)
-	#return global_rect
 
 
 func get_tile_pos(global_pos):
-	var local_pos = ground.to_local(global_pos)
-	var tile_pos = ground.local_to_map(local_pos)
+	var local_pos = water.to_local(global_pos)
+	var tile_pos = water.local_to_map(local_pos)
 	
 	return tile_pos
+
 
 func get_selection(converted_rect):
 	for unit in get_tree().get_nodes_in_group("Units"):
