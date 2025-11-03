@@ -18,10 +18,6 @@ config/features=PackedStringArray("4.5", "Forward Plus")
 
 UnitManager="*res://Scenes/unit_manager.tscn"
 
-[display]
-
-window/stretch/mode="viewport"
-
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")

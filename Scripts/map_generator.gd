@@ -1,56 +1,48 @@
 extends Node2D
 
-
-
-
 @onready var water_tileset: TileMapLayer = $water
 @onready var ground_tileset: TileMapLayer = $ground
 @onready var ground_2_tileset: TileMapLayer = $ground2
-
-
-
 @export var noise := FastNoiseLite.new()
 
 
 var source_id := 0
 var terrain_set := 0
-
-
 var water_tiles_array : Array
 var water_terrain_int := 0
 var ground_tiles_array : Array
 var ground_terrain_int := 1
 var noise_val_array : Array
-
 var water_tiles :=[
 	Vector2i(13,13),
 	Vector2i(14,13),
 	Vector2i(15,13),
 	Vector2i(16,13)
 ]
-
-#var ground_tiles := [
-	#Vector2i(2,1),
-	#Vector2i(3,1),
-	#Vector2i(4,1),
-	##Vector2i(4,3)
-	##Vector2i(4,2),
-	##Vector2i(1,3)
-#]
-
 const TILE_SIZE_SETTER := 32
-
 const CHUNK_SIZE := 32
+const CELLS_PER_FRAME := 128 #how many tiles procesed before yielding
+const ACTIVE_RADIUS := 1 # chunks activley around camera (3x3)
+const PRELOAD_RADIUS := 5 # background preloading (5x5 total)
+#const UNLOAD_DISTANCE := 3
+
+
 var generated_chunks := {}
+#var loading_chunks := {} #currently loading threads
+var chunk_results_queue: Array = []
+
+#var chunks_in_progress := {}
+var generation_queue := []
+var preload_queue := []
+#var finished_threads: Array = []
 
 
 func _ready() -> void:
 	randomize()
-	
-	#noise = noise_text.noise
 	noise.seed = randi()
 	
-	
+
+
 func _process(_delta: float) -> void:
 	var camera_pos = get_viewport().get_camera_2d().position
 	var tile_size = water_tileset.tile_set.tile_size
@@ -58,28 +50,65 @@ func _process(_delta: float) -> void:
 		floor(camera_pos.x / (CHUNK_SIZE * tile_size.x)),
 		floor(camera_pos.y / (CHUNK_SIZE * tile_size.y))
 	)
-	
-	for x in range(chunk_coords.x - 1, chunk_coords.x + 2):
-		for y in range(chunk_coords.y - 1, chunk_coords.y + 2):
+
+	# Generate active chunks first (close to camera)
+	for x in range(chunk_coords.x - ACTIVE_RADIUS, chunk_coords.x + ACTIVE_RADIUS + 1):
+		for y in range(chunk_coords.y - ACTIVE_RADIUS, chunk_coords.y + ACTIVE_RADIUS + 1):
 			var c = Vector2i(x, y)
 			if not generated_chunks.has(c):
-				generate_chunk(c)
+				generated_chunks[c] = true
+				generation_queue.append(c)
+	
+	# Add preload chunks (slightly further away)
+	for x in range(chunk_coords.x - PRELOAD_RADIUS, chunk_coords.x + PRELOAD_RADIUS + 1):
+		for y in range(chunk_coords.y - PRELOAD_RADIUS, chunk_coords.y + PRELOAD_RADIUS + 1):
+			var c = Vector2i(x, y)
+			if not generated_chunks.has(c) and not generation_queue.has(c):
+				generated_chunks[c] = true
+				preload_queue.append(c)
+	
+	# Prioritze main generation queue
+	if generation_queue.size() > 0:
+		var next_chunk = generation_queue.pop_front()
+		call_deferred("_generate_chunk_async", next_chunk)
+	elif preload_queue.size() > 0:
+		# Generate on preload chunk slowly during idle time
+		var next_preload = preload_queue.pop_front()
+		call_deferred("_generate_chunk_async", next_preload)
 	
 	
-func generate_chunk(chunk_coords: Vector2i) -> void:
+func _generate_chunk_async(chunk_coords: Vector2i) -> void:
 	var start_x = chunk_coords.x * CHUNK_SIZE
 	var start_y = chunk_coords.y * CHUNK_SIZE
-
-	for x in range(CHUNK_SIZE):
-		for y in range(CHUNK_SIZE):
-			var world_x = start_x + x
-			var world_y = start_y + y
-			var cell := Vector2i(world_x, world_y)
-			var noise_val: float = noise.get_noise_2d(world_x,world_y)
-			water_tileset.set_cell(cell, source_id, water_tiles.pick_random())
-			if noise_val >= 0.0:
-				ground_tiles_array.append(Vector2i(world_x,world_y))
-				
-	ground_tileset.set_cells_terrain_connect(ground_tiles_array,terrain_set, ground_terrain_int,false)
+	var ground_cells := []
+	var cell_count := CHUNK_SIZE * CHUNK_SIZE
+	
+	for i in range(cell_count):
+		var x = i % CHUNK_SIZE
+		var y = i / CHUNK_SIZE
+		var world_x = start_x + x
+		var world_y = start_y + y
+		var cell := Vector2i(world_x, world_y)
+		var noise_val: float = noise.get_noise_2d(world_x, world_y)
 		
-	generated_chunks[chunk_coords] = true
+		# base water layer
+		water_tileset.set_cell(cell, source_id, water_tiles.pick_random())
+		 # ground overlay
+		if noise_val >= 0.0:
+			ground_cells.append(cell)
+			
+		# yeild every few cells to reduce stutter
+		if i % CELLS_PER_FRAME == 0:
+			await get_tree().process_frame
+	
+	# apply ground terrain connectivity in batches
+	await _connect_ground_cells_in_batches(ground_cells)
+	
+	#generated_chunks.erase(chunk_coords)
+	
+func _connect_ground_cells_in_batches(cells: Array) -> void:
+	var batch_size = CELLS_PER_FRAME
+	for i in range(0, cells.size(), batch_size):
+		var batch = cells.slice(i, i + batch_size)
+		ground_tileset.set_cells_terrain_connect(batch, terrain_set, 1, false)
+		await get_tree().process_frame

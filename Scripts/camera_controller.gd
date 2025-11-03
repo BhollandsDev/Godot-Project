@@ -16,7 +16,7 @@ var edge_scroll: bool
 
 func _ready() -> void:
 	add_to_group("camera_controller")
-	print(camera.zoom)
+	#print(camera.zoom)
 	
 
 	
