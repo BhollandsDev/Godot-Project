@@ -8,7 +8,9 @@ extends CharacterBody2D
 var selection_rect : Rect2
 var selection_width : int
 var previous_position: Vector2
+
 #setter flag variable for selection of unit
+
 var select_mode : bool = false:
 	set(value):
 		select_mode = value
@@ -23,12 +25,15 @@ var select_mode : bool = false:
 		
 #setting the name to Unit
 func _ready() -> void:
-	#add_to_group("Unit")
 	name = "Unit"
 	connect("tree_exited", Callable(self, "_on_tree_exited"))
 	previous_position = position
 	nav_agent.avoidance_enabled = true
-	
+	var visualizer = get_tree().get_first_node_in_group("Path Visualizer")
+	if visualizer:
+		visualizer.update_agent_list()
+		
+		
 func set_previous_position(pos: Vector2):
 	previous_position = pos
 #unit selection box is getting drawn
@@ -97,3 +102,4 @@ func _on_unit_moved():
 	
 func _on_stop_moving():
 	set_physics_process(false)
+	

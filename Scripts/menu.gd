@@ -7,7 +7,7 @@ extends PanelContainer
 func _on_add_button_pressed() -> void:
 	
 	UnitManager.add_unit()
-
+	
 
 func _on_delete_button_pressed() -> void:
 	

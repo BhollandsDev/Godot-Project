@@ -78,6 +78,10 @@ func add_unit():
 	print ("Added Unit at ", unit.position)
 	unit.position = positions
 	
+	var visualizer = get_tree().get_first_node_in_group("Path Visualizer")
+	if visualizer:
+		visualizer.update_agent_list()
+	
 func position_occupied(pos: Vector2) -> bool:
 	for p in occupied_positions:
 		if p == pos:

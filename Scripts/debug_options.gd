@@ -3,6 +3,7 @@ extends PanelContainer
 @onready var debug_options: PanelContainer = $"."
 @onready var camera_controller = get_tree().get_first_node_in_group("camera_controller")
 @onready var selection_manager = get_tree().get_first_node_in_group("SelectionManager")
+@onready var path_visualizer = get_tree().get_first_node_in_group("Path Visualizer")
 
 ### Grid Line Variables ###
 
@@ -16,6 +17,12 @@ extends PanelContainer
 @onready var selectionbox_line_width: SpinBox = $"MarginContainer/VBoxContainer/GridContainer2/VBoxContainer2/Selectionbox Line Width"
 @onready var selectionbox_color_cpb: ColorPickerButton = $"MarginContainer/VBoxContainer/GridContainer2/VBoxContainer2/Selectionbox Color CPB"
 
+### Path Visualization variable ###
+
+@onready var path_visual_enable: CheckBox = $"MarginContainer/VBoxContainer/GridContainer2/VBoxContainer3/Path Visual Enable"
+@onready var path_line_width: SpinBox = $"MarginContainer/VBoxContainer/GridContainer2/VBoxContainer3/Path Line Width"
+@onready var path_line_color_cpb: ColorPickerButton = $"MarginContainer/VBoxContainer/GridContainer2/VBoxContainer3/Path Line Color CPB"
+
 
 func _ready() -> void:
 	grid_line_width.value = selection_manager.grid_line_width
@@ -25,6 +32,10 @@ func _ready() -> void:
 	selectionbox_min_size.value = selection_manager.selection_min_rect_size
 	selectionbox_line_width.value = selection_manager.selection_rect_width
 	selectionbox_color_cpb.color = selection_manager.selection_rect_color
+	
+	path_visual_enable.button_pressed = path_visualizer.show_paths
+	path_line_width.value = path_visualizer.path_width
+	path_line_color_cpb.color = path_visualizer.path_color
 	
 func _on_close_windows_button_pressed() -> void:
 	debug_options.hide()
@@ -62,3 +73,16 @@ func _on_selectionbox_line_width_value_changed(value: float) -> void:
 
 func _on_selectionbox_color_cpb_color_changed(color: Color) -> void:
 	selection_manager.selection_rect_color = color
+	
+##### Path Visualizer ########
+
+func _on_path_visual_enable_toggled(toggled_on: bool) -> void:
+	path_visualizer.show_paths = toggled_on
+	
+
+func _on_path_line_width_value_changed(value: float) -> void:
+	path_visualizer.path_width = value
+
+
+func _on_path_line_color_cpb_color_changed(color: Color) -> void:
+	path_visualizer.path_color = color
