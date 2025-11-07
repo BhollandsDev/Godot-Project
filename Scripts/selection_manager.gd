@@ -7,11 +7,16 @@ extends Node2D
 
 @export var selection_min_rect_size := 10
 @export var selection_rect_width := 3
-@export var selection_rect_color := Color(0.462, 0.0, 0.0, 1.0)
+@export var selection_rect_color := Color(0.463, 0.0, 0.0, 0.552)
+@export var selection_rect_filled := false
 
 @export var grid_line_enable: bool = false
 @export var grid_line_width = 2
 @export var grid_line_color:= Color(0.0, 0.0, 0.0, 1.0)
+
+@export var path_visual_enable : bool = false
+@export var path_visual_line_width: int = 2
+@export var path_visual_line_color: Color = Color.RED
 
 var selection_rect_local = Rect2()
 var drawing = false
@@ -35,7 +40,7 @@ func _draw():
 	if drawing and start_pos != Vector2.ZERO and end_pos != Vector2.ZERO:
 		if drawing and start_pos.distance_to(end_pos) > selection_min_rect_size:
 			selection_rect_local = Rect2(start_pos, end_pos - start_pos).abs()
-			draw_rect(selection_rect_local, selection_rect_color, false, selection_rect_width)
+			draw_rect(selection_rect_local, selection_rect_color, selection_rect_filled, selection_rect_width)
 	
 	
 		
@@ -89,7 +94,7 @@ func draw_grid_lines():
 	var cam = get_viewport().get_camera_2d().position
 	
 	if grid_line_enable:
-		queue_redraw()
+		
 		for i in range(int((cam.x - size.x) / 32) - 1, int((size.x + cam.x) / 32) + 1):
 			draw_line(Vector2(i * 32, cam.y + size.y + 100), Vector2(i * 32, cam.y - size.y - 100), grid_line_color, grid_line_width)
 		for i in range(int((cam.y - size.y) / 32) - 1, int((size.y + cam.y) / 32) + 1):
