@@ -82,4 +82,4 @@ func _zoom_toward_mouse(delta: float, ) -> void:
 	var new_zoom = clamp(camera.zoom + zoom_speed_multiple, max_zoom_out_multiple, max_zoom_in_multiple)
 	
 	camera.zoom =  new_zoom
-	#print(new_zoom)
+	print(new_zoom)

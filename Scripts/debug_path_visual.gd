@@ -25,6 +25,7 @@ func update_agent_list():
 	for unit in get_tree().get_nodes_in_group("Units"):
 		var agent = unit.get_node_or_null("NavigationAgent2D")
 		if agent:
+			#print(agent)
 			agents.append(agent)
 			
 func draw_path():

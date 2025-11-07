@@ -1,0 +1,260 @@
+[gd_scene load_steps=4 format=3 uid="uid://k7450nbtqvyt"]
+
+[ext_resource type="Theme" uid="uid://1kvf5d57o7fj" path="res://Themes/testing_scene.tres" id="1_5crhr"]
+[ext_resource type="Script" uid="uid://b1ui0k62h4m16" path="res://Scripts/debug_options_menu.gd" id="2_n0mag"]
+
+[sub_resource type="Theme" id="Theme_oq1i5"]
+
+[node name="In Game Menu" type="CanvasLayer"]
+
+[node name="Debug Options Menu" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -178.0
+offset_top = -201.0
+offset_right = 178.0
+offset_bottom = 201.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_force_pass_scroll_events = false
+theme = ExtResource("1_5crhr")
+script = ExtResource("2_n0mag")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Debug Options Menu"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title Bar PC" type="PanelContainer" parent="Debug Options Menu/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme = SubResource("Theme_oq1i5")
+theme_type_variation = &"PanelContainer_TitleBar"
+
+[node name="Title Bar label" type="Label" parent="Debug Options Menu/VBoxContainer/Title Bar PC"]
+layout_mode = 2
+size_flags_horizontal = 6
+text = "Debug Options"
+
+[node name="Close Button" type="Button" parent="Debug Options Menu/VBoxContainer/Title Bar PC"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+focus_mode = 1
+focus_behavior_recursive = 1
+action_mode = 0
+text = "X"
+
+[node name="TabContainer" type="TabContainer" parent="Debug Options Menu/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/tab_separation = 15
+tab_alignment = 1
+current_tab = 0
+clip_tabs = false
+
+[node name="Grid" type="GridContainer" parent="Debug Options Menu/VBoxContainer/TabContainer"]
+layout_mode = 2
+size_flags_stretch_ratio = 3.43
+columns = 2
+metadata/_tab_index = 0
+
+[node name="Enable Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Grid"]
+layout_mode = 2
+text = "Enable:"
+horizontal_alignment = 1
+
+[node name="Grid Enable CB" type="CheckBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Grid"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Line Width Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Grid"]
+layout_mode = 2
+text = "Line Width:"
+horizontal_alignment = 1
+
+[node name="Line Width SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Grid"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Line Color Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Grid"]
+layout_mode = 2
+text = "Line Color:"
+horizontal_alignment = 1
+
+[node name="Line Color CPB" type="ColorPickerButton" parent="Debug Options Menu/VBoxContainer/TabContainer/Grid"]
+layout_mode = 2
+size_flags_horizontal = 6
+text = "asd"
+
+[node name="Selection Box" type="GridContainer" parent="Debug Options Menu/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+columns = 2
+metadata/_tab_index = 1
+
+[node name="SelecBox Min Size Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Selection Box"]
+layout_mode = 2
+text = "Selection Box Min Size:"
+horizontal_alignment = 1
+
+[node name="SelecBox Min Size SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Selection Box"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="SelecBox Line Width Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Selection Box"]
+layout_mode = 2
+text = "Selection Box Line Width:"
+horizontal_alignment = 1
+
+[node name="SelecBox Line Width SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Selection Box"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="SelecBox Line Color Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Selection Box"]
+layout_mode = 2
+text = "Selection Box Line Color:"
+horizontal_alignment = 1
+
+[node name="SelecBox Line Color CPB" type="ColorPickerButton" parent="Debug Options Menu/VBoxContainer/TabContainer/Selection Box"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+text = "asd"
+
+[node name="SelecBox Filled Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Selection Box"]
+layout_mode = 2
+text = "Selection Box Filled:"
+horizontal_alignment = 1
+
+[node name="SelecBox Filled CB" type="CheckBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Selection Box"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="Camera" type="GridContainer" parent="Debug Options Menu/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+columns = 2
+metadata/_tab_index = 2
+
+[node name="Enable Edge Scroll Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+text = "Enable Edge Scrolling:"
+horizontal_alignment = 1
+
+[node name="Enable Edge Scroll CB" type="CheckBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="Edge Scroll Speed Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+text = "Edge Scroll Speed:"
+horizontal_alignment = 1
+
+[node name="Edge Scroll Speed SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="Edge Scroll Dist Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+text = "Capture Dist to Edge:"
+horizontal_alignment = 1
+
+[node name="Edge Scroll Dist SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="Camera Move Speed Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+text = "Camera Move Speed:"
+horizontal_alignment = 1
+
+[node name="Camera Move Speed SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="Max Zoom In Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+text = "Max Zoom In:"
+horizontal_alignment = 1
+
+[node name="Max Zoom In SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="Max Zoom Out Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+text = "Max Zoom Out:"
+horizontal_alignment = 1
+
+[node name="Max Zoom Out SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="Zoom Speed Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+text = "Zoom Speed:"
+horizontal_alignment = 1
+
+[node name="Zoom Speed SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="Path Visual" type="GridContainer" parent="Debug Options Menu/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+columns = 2
+metadata/_tab_index = 3
+
+[node name="Enable Path Visual Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Path Visual"]
+layout_mode = 2
+text = "Enable Path Visualization: "
+horizontal_alignment = 1
+
+[node name="Enable Path Visual CB" type="CheckBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Path Visual"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+
+[node name="Path Line Width Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Path Visual"]
+layout_mode = 2
+text = "Path Line Width:"
+horizontal_alignment = 1
+
+[node name="Path Line Width SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Path Visual"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+
+[node name="Path Line Color Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Path Visual"]
+layout_mode = 2
+text = "Path Line Color:"
+horizontal_alignment = 1
+
+[node name="Path Line Color CPB" type="ColorPickerButton" parent="Debug Options Menu/VBoxContainer/TabContainer/Path Visual"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 0
+text = "asd"
+
+[connection signal="gui_input" from="Debug Options Menu/VBoxContainer/Title Bar PC" to="Debug Options Menu" method="_on_title_bar_pc_gui_input"]
+[connection signal="pressed" from="Debug Options Menu/VBoxContainer/Title Bar PC/Close Button" to="Debug Options Menu" method="_on_close_button_pressed"]
+[connection signal="toggled" from="Debug Options Menu/VBoxContainer/TabContainer/Grid/Grid Enable CB" to="Debug Options Menu" method="_on_grid_enable_cb_toggled"]
+[connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Grid/Line Width SB" to="Debug Options Menu" method="_on_line_width_sb_value_changed"]
+[connection signal="color_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Grid/Line Color CPB" to="Debug Options Menu" method="_on_line_color_cpb_color_changed"]
+[connection signal="toggled" from="Debug Options Menu/VBoxContainer/TabContainer/Path Visual/Enable Path Visual CB" to="Debug Options Menu" method="_on_enable_path_visual_cb_toggled"]
+[connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Path Visual/Path Line Width SB" to="Debug Options Menu" method="_on_path_line_width_sb_value_changed"]
+[connection signal="color_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Path Visual/Path Line Color CPB" to="Debug Options Menu" method="_on_path_line_color_cpb_color_changed"]

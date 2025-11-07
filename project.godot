@@ -16,7 +16,7 @@ config/features=PackedStringArray("4.5", "Forward Plus")
 
 [autoload]
 
-UnitManager="*res://Scenes/unit_manager.tscn"
+UnitManager="res://Scenes/unit_manager.tscn"
 
 [editor_plugins]
 
@@ -28,8 +28,8 @@ MainCamera=""
 UnitsContainer=""
 Units="Units Group"
 "Selected Units"=""
-SelectionManager=""
 "Path Visualizer"=""
+"Selection Manager"=""
 
 [input]
 

@@ -1,29 +1,26 @@
-[gd_scene load_steps=8 format=3 uid="uid://c0jlaqwhu7kf1"]
+[gd_scene load_steps=7 format=3 uid="uid://c0jlaqwhu7kf1"]
 
 [ext_resource type="Script" uid="uid://bdlk7l8m7d26w" path="res://Scripts/Main.gd" id="1_kry3j"]
 [ext_resource type="PackedScene" uid="uid://ch07h3iex5y17" path="res://Scenes/camera_controller.tscn" id="2_21xkr"]
-[ext_resource type="Script" uid="uid://chmim2fwj8vda" path="res://Scripts/unit_manager.gd" id="3_6bp64"]
 [ext_resource type="Script" uid="uid://cucxbhijs4ylv" path="res://Scripts/selection_manager.gd" id="3_21xkr"]
-[ext_resource type="Script" uid="uid://bv6gs25la8aax" path="res://Scripts/debug_path_visual.gd" id="4_6bp64"]
 [ext_resource type="PackedScene" uid="uid://dphq41d7klajd" path="res://Scenes/user_interface.tscn" id="4_344ge"]
 [ext_resource type="PackedScene" uid="uid://cp0uea88vtojc" path="res://Scenes/map_generator.tscn" id="5_ynf5e"]
+[ext_resource type="PackedScene" uid="uid://k7450nbtqvyt" path="res://Scenes/in_game_menu.tscn" id="8_344ge"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_kry3j")
 
 [node name="Map Generator" parent="." instance=ExtResource("5_ynf5e")]
 
-[node name="Units Container" type="Node2D" parent="." groups=["UnitsContainer"]]
-script = ExtResource("3_6bp64")
-
-[node name="Debug Path Visual" type="Node2D" parent="Units Container" groups=["Path Visualizer"]]
-script = ExtResource("4_6bp64")
+[node name="Units Container" type="Node2D" parent="."]
 
 [node name="CanvasLayer" type="Node2D" parent="."]
 
-[node name="Selection Draw" type="Node2D" parent="CanvasLayer" groups=["SelectionManager"]]
+[node name="Selection Draw" type="Node2D" parent="CanvasLayer" groups=["Selection Manager"]]
 script = ExtResource("3_21xkr")
 
 [node name="CameraController" parent="." instance=ExtResource("2_21xkr")]
 
 [node name="User Interface" parent="." instance=ExtResource("4_344ge")]
+
+[node name="In Game Menu" parent="." instance=ExtResource("8_344ge")]

@@ -1,7 +1,10 @@
 extends CharacterBody2D
+
+@onready var main = $"../../../Main"
 @onready var nav_agent = $NavigationAgent2D
 @onready var animation_player = $AnimationPlayer
-#@onready var camera := get_tree().get_first_node_in_group("MainCamera")
+
+
 #set speed
 @export var speed : int
 # every unit has their own selection box when selected
@@ -26,14 +29,13 @@ var select_mode : bool = false:
 #setting the name to Unit
 func _ready() -> void:
 	name = "Unit"
-	connect("tree_exited", Callable(self, "_on_tree_exited"))
+	#connect("tree_exited", Callable(self, "_on_tree_exited"))
 	previous_position = position
 	nav_agent.avoidance_enabled = true
-	var visualizer = get_tree().get_first_node_in_group("Path Visualizer")
-	if visualizer:
-		visualizer.update_agent_list()
-		
-		
+	
+	
+	
+	
 func set_previous_position(pos: Vector2):
 	previous_position = pos
 #unit selection box is getting drawn
@@ -56,7 +58,7 @@ func _physics_process(delta: float) -> void:
 	velocity = round(direction * speed)
 	
 	move_and_slide()
-
+	
 	
 	
 #func to select the unit
@@ -72,15 +74,17 @@ func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> vo
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			select_mode = true
 			for unit in get_tree().get_nodes_in_group("Units"):
-			#for unit in UnitManager.selected_units:
+				#for unit in main.selected_units:
 				if unit != self:
 					unit.remove_from_group("Selected Units")
 					unit.deselect()
-			#UnitManager.selected_units = [self] #update the selected unit from the Unit manger
-			self.add_to_group("Selected Units")
+				#main.selected_units = [self] #update the selected unit from the Unit manger
+				self.add_to_group("Selected Units")
+
 #func to set target position
 func move_to(target_position):
 	nav_agent.target_position = target_position
+
 #moving will play running animation
 	animation_player.play("run")
 
@@ -93,11 +97,14 @@ func animation(_delta):
 			$Sprite2D.flip_h = false
 
 #func _on_tree_exited():
-	#if self in get_tree().get_nodes_in_group("Selected Units"):
+	#var selected_units = get_tree().get_nodes_in_group("Selected Units")
+	#print(selected_units)
+	#elif self in get_tree().get_nodes_in_group("Selected Units"):
 		#self.remove_from_group("Selected Units")
-		##UnitManager.selected_units.erase(self)
+		#main.selected_units.erase(self)
+
 func _on_unit_moved():
-	UnitManager.update_unit_position(previous_position, position)
+	main.update_unit_position(previous_position, position)
 	previous_position = position
 	
 func _on_stop_moving():
