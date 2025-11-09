@@ -14,10 +14,10 @@ script = ExtResource("1_kry3j")
 
 [node name="Units Container" type="Node2D" parent="."]
 
-[node name="CanvasLayer" type="Node2D" parent="."]
-
-[node name="Selection Draw" type="Node2D" parent="CanvasLayer" groups=["Selection Manager"]]
+[node name="Selection Draw" type="Node2D" parent="." groups=["Selection Manager"]]
 script = ExtResource("3_21xkr")
+
+[node name="CanvasLayer" type="Node2D" parent="."]
 
 [node name="CameraController" parent="." instance=ExtResource("2_21xkr")]
 

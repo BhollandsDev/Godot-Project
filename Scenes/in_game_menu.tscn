@@ -8,6 +8,7 @@
 [node name="In Game Menu" type="CanvasLayer"]
 
 [node name="Debug Options Menu" type="PanelContainer" parent="."]
+visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -155,13 +156,14 @@ size_flags_vertical = 4
 
 [node name="Edge Scroll Speed Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
 layout_mode = 2
-text = "Edge Scroll Speed:"
+text = "Camera Speed:"
 horizontal_alignment = 1
 
 [node name="Edge Scroll Speed SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 4
+max_value = 1000.0
 
 [node name="Edge Scroll Dist Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
 layout_mode = 2
@@ -169,16 +171,6 @@ text = "Capture Dist to Edge:"
 horizontal_alignment = 1
 
 [node name="Edge Scroll Dist SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
-layout_mode = 2
-size_flags_horizontal = 6
-size_flags_vertical = 4
-
-[node name="Camera Move Speed Label" type="Label" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
-layout_mode = 2
-text = "Camera Move Speed:"
-horizontal_alignment = 1
-
-[node name="Camera Move Speed SB" type="SpinBox" parent="Debug Options Menu/VBoxContainer/TabContainer/Camera"]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 4
@@ -259,6 +251,12 @@ text = "asd"
 [connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Selection Box/SelecBox Line Width SB" to="Debug Options Menu" method="_on_selec_box_line_width_sb_value_changed"]
 [connection signal="color_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Selection Box/SelecBox Line Color CPB" to="Debug Options Menu" method="_on_selec_box_line_color_cpb_color_changed"]
 [connection signal="toggled" from="Debug Options Menu/VBoxContainer/TabContainer/Selection Box/SelecBox Filled CB" to="Debug Options Menu" method="_on_selec_box_filled_cb_toggled"]
+[connection signal="toggled" from="Debug Options Menu/VBoxContainer/TabContainer/Camera/Enable Edge Scroll CB" to="Debug Options Menu" method="_on_enable_edge_scroll_cb_toggled"]
+[connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Camera/Edge Scroll Speed SB" to="Debug Options Menu" method="_on_edge_scroll_speed_sb_value_changed"]
+[connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Camera/Edge Scroll Dist SB" to="Debug Options Menu" method="_on_edge_scroll_dist_sb_value_changed"]
+[connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Camera/Max Zoom In SB" to="Debug Options Menu" method="_on_max_zoom_in_sb_value_changed"]
+[connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Camera/Max Zoom Out SB" to="Debug Options Menu" method="_on_max_zoom_out_sb_value_changed"]
+[connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Camera/Zoom Speed SB" to="Debug Options Menu" method="_on_zoom_speed_sb_value_changed"]
 [connection signal="toggled" from="Debug Options Menu/VBoxContainer/TabContainer/Path Visual/Enable Path Visual CB" to="Debug Options Menu" method="_on_enable_path_visual_cb_toggled"]
 [connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Path Visual/Path Line Width SB" to="Debug Options Menu" method="_on_path_line_width_sb_value_changed"]
 [connection signal="color_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Path Visual/Path Line Color CPB" to="Debug Options Menu" method="_on_path_line_color_cpb_color_changed"]

@@ -1,32 +1,35 @@
 extends Node2D
 
+@onready var selection_manager = get_tree().get_first_node_in_group("Selection Manager")
+@onready var camera = $Camera2D
+
 @export var zoom_speed:  int = 1
 @export var max_zoom_out:   int = 1
 @export var max_zoom_in: int = 1
-@export var speed = 400.0  # pixels per second
+#@export var speed = 400.0  # pixels per second
 @export var scroll_speed: float = 400.0 # Edge scroll speed
 @export var edge_dist: int = 1       # Pixels from screen edge to trigger scrolling
+@export var enable_edge_scroll: bool = false
 
 var target_zoom := Vector2.ONE
 
-@onready var camera = $Camera2D
 
-#@export var camera_var: Camera2D = $Camera2D
-var edge_scroll: bool 
+
+
 
 func _ready() -> void:
 	add_to_group("camera_controller")
-	#print(camera.zoom)
+	
 	
 
 	
 func _process(delta: float) -> void:
-	move_camera(delta)
-	var selection_manager = get_tree().get_first_node_in_group("SelectionManager")
-	if selection_manager:
+	#move_camera(delta)
+	if move_camera(delta):
+		move_camera(delta)
 		selection_manager.queue_redraw()
+		
 	
-
 	
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -37,12 +40,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 	# --- Main camera movement handler ---
-func move_camera(delta: float) -> void:
+func move_camera(delta: float) -> bool:
 	var move := Vector2.ZERO
 	move += get_keyboard_input()
 	move += get_edge_scroll_input()
 	if move != Vector2.ZERO:
 		camera.position += move.normalized() * scroll_speed * delta
+		return true
+	else:
+		return false
 		
 	# --- Keybaord movement ---
 func get_keyboard_input() -> Vector2:
@@ -59,9 +65,9 @@ func get_keyboard_input() -> Vector2:
 		
 	# --- Edge scrolling movement ---
 func get_edge_scroll_input() -> Vector2:
-	if not edge_scroll:
+	if not enable_edge_scroll:
 		return Vector2.ZERO
-	#if edge_scroll == true:
+	
 	var move := Vector2.ZERO
 	var viewport_size = get_viewport().get_visible_rect().size
 	var mouse_pos = get_viewport().get_mouse_position()
@@ -82,4 +88,4 @@ func _zoom_toward_mouse(delta: float, ) -> void:
 	var new_zoom = clamp(camera.zoom + zoom_speed_multiple, max_zoom_out_multiple, max_zoom_in_multiple)
 	
 	camera.zoom =  new_zoom
-	print(new_zoom)
+	

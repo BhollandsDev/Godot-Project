@@ -1,7 +1,7 @@
 extends PanelContainer
 
 @onready var main = $"../../../Main"
-@onready var debug_options: PanelContainer = $"../DebugOptions"
+
 @onready var debug_options_window: PanelContainer = $"../../../Main/In Game Menu/Debug Options Menu"
 
 

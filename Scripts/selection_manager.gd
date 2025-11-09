@@ -1,7 +1,10 @@
 extends Node2D
+@onready var main: Node2D = $".."
 
-@onready var main = $"../../../Main"
-@onready var water = get_node("../../Map Generator/water")
+#@onready var main = $"../../../Main"
+#@onready var map_generator: Node2D = $"../Map Generator"
+
+@onready var water = get_node("../Map Generator/water")
 @onready var units_container := get_tree().get_first_node_in_group("UnitsContainer")
 @onready var camera := get_tree().get_nodes_in_group("MainCamera")
 
@@ -12,6 +15,7 @@ extends Node2D
 
 @export var grid_line_enable: bool = false
 @export var grid_line_width = 2
+
 @export var grid_line_color:= Color(0.0, 0.0, 0.0, 1.0)
 
 @export var path_visual_enable : bool = false
@@ -41,12 +45,6 @@ func _draw():
 		if drawing and start_pos.distance_to(end_pos) > selection_min_rect_size:
 			selection_rect_local = Rect2(start_pos, end_pos - start_pos).abs()
 			draw_rect(selection_rect_local, selection_rect_color, selection_rect_filled, selection_rect_width)
-	
-	
-		
-	
-
-
 
 	
 func _unhandled_input(event: InputEvent) -> void:
@@ -54,7 +52,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.pressed:
 			start_pos = get_global_mouse_position()
 			drawing = true
-			#queue_redraw()
 		elif event.is_released():
 			drawing = false
 			start_pos = Vector2.ZERO
@@ -90,13 +87,17 @@ func get_selection(converted_rect):
 	return converted_rect
 
 func draw_grid_lines():
-	var size = get_viewport_rect().size # * get_viewport().get_camera_2d().zoom / 2
+	var size = get_viewport_rect().size
 	var cam = get_viewport().get_camera_2d().position
-	
+	### Tile Outlines ###
 	if grid_line_enable:
-		
 		for i in range(int((cam.x - size.x) / 32) - 1, int((size.x + cam.x) / 32) + 1):
 			draw_line(Vector2(i * 32, cam.y + size.y + 100), Vector2(i * 32, cam.y - size.y - 100), grid_line_color, grid_line_width)
 		for i in range(int((cam.y - size.y) / 32) - 1, int((size.y + cam.y) / 32) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * 32), Vector2(cam.x - size.x - 100, i * 32), grid_line_color, grid_line_width)
-	
+	### Chunk Outlines ###
+	if grid_line_enable:
+		for i in range(int((cam.x - size.x) / (32 * 32)) - 1, int((size.x + cam.x) / (32 * 32)) + 1):
+			draw_line(Vector2(i * (32 * 32), cam.y + size.y + 100), Vector2(i * (32 * 32), cam.y - size.y - 100), grid_line_color, (grid_line_width * 2))
+		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
+			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))

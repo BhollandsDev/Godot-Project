@@ -85,7 +85,7 @@ func _generate_chunk_async(chunk_coords: Vector2i) -> void:
 	
 	for i in range(cell_count):
 		var x = i % CHUNK_SIZE
-		var y = i / CHUNK_SIZE
+		@warning_ignore("integer_division") var y = i / CHUNK_SIZE
 		var world_x = start_x + x
 		var world_y = start_y + y
 		var cell := Vector2i(world_x, world_y)

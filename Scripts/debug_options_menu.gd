@@ -3,6 +3,7 @@ extends PanelContainer
 
 @onready var main = $"../../../Main"
 @onready var selection_manager := get_tree().get_first_node_in_group("Selection Manager")
+@onready var camera := $"../../../Main/CameraController"
 var drag_point = null
 var agents := []
 
@@ -25,6 +26,15 @@ var agents := []
 @onready var selec_box_line_color_cpb: ColorPickerButton = $"VBoxContainer/TabContainer/Selection Box/SelecBox Line Color CPB"
 @onready var selec_box_filled_cb: CheckBox = $"VBoxContainer/TabContainer/Selection Box/SelecBox Filled CB"
 
+### Camera Options Variables ###
+
+@onready var enable_edge_scroll_cb: CheckBox = $"VBoxContainer/TabContainer/Camera/Enable Edge Scroll CB"
+@onready var edge_scroll_speed_sb: SpinBox = $"VBoxContainer/TabContainer/Camera/Edge Scroll Speed SB"
+@onready var edge_scroll_dist_sb: SpinBox = $"VBoxContainer/TabContainer/Camera/Edge Scroll Dist SB"
+@onready var max_zoom_in_sb: SpinBox = $"VBoxContainer/TabContainer/Camera/Max Zoom In SB"
+@onready var max_zoom_out_sb: SpinBox = $"VBoxContainer/TabContainer/Camera/Max Zoom Out SB"
+@onready var zoom_speed_sb: SpinBox = $"VBoxContainer/TabContainer/Camera/Zoom Speed SB"
+
 
 func _ready() -> void:
 	
@@ -43,7 +53,15 @@ func _ready() -> void:
 	selec_box_line_width_sb.value = selection_manager.selection_rect_width
 	selec_box_line_color_cpb.color = selection_manager.selection_rect_color
 	selec_box_filled_cb.button_pressed = selection_manager.selection_rect_filled
-
+	
+	### Camera Options - align with preset defaults
+	enable_edge_scroll_cb.button_pressed = camera.enable_edge_scroll
+	edge_scroll_speed_sb.value = camera.scroll_speed
+	edge_scroll_dist_sb.value = camera.edge_dist
+	max_zoom_in_sb.value = camera.max_zoom_in
+	max_zoom_out_sb.value = camera.max_zoom_out
+	zoom_speed_sb.value = camera.zoom_speed
+	
 #### Input Connections ####
 
 func _on_title_bar_pc_gui_input(event: InputEvent) -> void:
@@ -115,3 +133,29 @@ func _on_selec_box_line_color_cpb_color_changed(color: Color) -> void:
 
 func _on_selec_box_filled_cb_toggled(toggled_on: bool) -> void:
 	selection_manager.selection_rect_filled = toggled_on
+
+
+### Camera Options ###
+
+func _on_enable_edge_scroll_cb_toggled(toggled_on: bool) -> void:
+	camera.enable_edge_scroll = toggled_on
+
+
+func _on_edge_scroll_speed_sb_value_changed(value: float) -> void:
+	camera.scroll_speed = value
+
+
+func _on_edge_scroll_dist_sb_value_changed(value: float) -> void:
+	camera.edge_dist = value
+
+
+func _on_max_zoom_in_sb_value_changed(value: float) -> void:
+	camera.max_zoom_in = value
+
+
+func _on_max_zoom_out_sb_value_changed(value: float) -> void:
+	camera.max_zoom_out = value
+
+
+func _on_zoom_speed_sb_value_changed(value: float) -> void:
+	camera.zoom_speed = value
