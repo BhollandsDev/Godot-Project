@@ -36,12 +36,18 @@ var generation_queue := []
 var preload_queue := []
 #var finished_threads: Array = []
 
+var selection_rect : Rect2
+var selection_width : int
+
+var selected_cell := Vector2i(-1, -1)
+
+
+
 
 func _ready() -> void:
 	randomize()
 	noise.seed = randi()
 	
-
 
 func _process(_delta: float) -> void:
 	var camera_pos = get_viewport().get_camera_2d().position
@@ -112,3 +118,10 @@ func _connect_ground_cells_in_batches(cells: Array) -> void:
 		var batch = cells.slice(i, i + batch_size)
 		ground_tileset.set_cells_terrain_connect(batch, terrain_set, 1, false)
 		await get_tree().process_frame
+
+func _on_unit_dig_complete(target_pos: Vector2):
+	var cell = ground_tileset.local_to_map(target_pos)
+	ground_tileset.set_cell(Vector2i(cell.x, cell.y), -1)
+	#update_edges(cell)
+
+	

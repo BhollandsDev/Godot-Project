@@ -4,6 +4,7 @@ extends CharacterBody2D
 @onready var nav_agent = $NavigationAgent2D
 @onready var animation_player = $AnimationPlayer
 
+signal  dig_complete(target_pos: Vector2)
 
 #set speed
 @export var speed : int
@@ -11,6 +12,11 @@ extends CharacterBody2D
 var selection_rect : Rect2
 var selection_width : int
 var previous_position: Vector2
+
+var state := "idle"
+var dig_target : Vector2
+var dig_hits : int = 0
+const DIG_HITS_REQUIRED : int = 5
 
 #setter flag variable for selection of unit
 
@@ -47,6 +53,7 @@ func _draw():
 func _physics_process(delta: float) -> void:
 #	#	return if navigation is finished
 	if nav_agent.is_navigation_finished():
+		start_digging()
 		#play idle when navigation stops
 		if animation_player.current_animation != "idle":
 			animation_player.play("idle")
@@ -96,17 +103,32 @@ func animation(_delta):
 		elif velocity.x > 0:
 			$Sprite2D.flip_h = false
 
-#func _on_tree_exited():
-	#var selected_units = get_tree().get_nodes_in_group("Selected Units")
-	#print(selected_units)
-	#elif self in get_tree().get_nodes_in_group("Selected Units"):
-		#self.remove_from_group("Selected Units")
-		#main.selected_units.erase(self)
-
 func _on_unit_moved():
 	main.update_unit_position(previous_position, position)
 	previous_position = position
 	
 func _on_stop_moving():
 	set_physics_process(false)
+	
+func command_dig(target_pos : Vector2):
+	dig_target = target_pos
+	state = "idle"
+	nav_agent.target_position = target_pos
+	
+func start_digging():
+	$AnimationPlayer.play("run")
+	var dig_timer = Timer.new()
+	dig_timer.wait_time = 0.5
+	dig_timer.one_shot = false
+	dig_timer.connect("timeout", Callable(self, "_on_dig_hit"))
+	add_child(dig_timer)
+	dig_timer.start()
+	
+func _on_dig_hit():
+	dig_hits += 1
+	if dig_hits >= DIG_HITS_REQUIRED:
+		emit_signal("dig_complete", dig_target)
+		state = "idle"
+		dig_hits = 0
+	
 	

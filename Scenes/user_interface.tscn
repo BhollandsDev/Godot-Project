@@ -34,8 +34,16 @@ text = "Delete Unit"
 
 [node name="Options button" type="Button" parent="UI/MarginContainer/Container"]
 layout_mode = 2
+focus_mode = 0
 text = "Options"
+
+[node name="Mine button" type="Button" parent="UI/MarginContainer/Container"]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+text = "Mine"
 
 [connection signal="pressed" from="UI/MarginContainer/Container/Add button" to="UI" method="_on_add_button_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/Container/Delete button" to="UI" method="_on_delete_button_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/Container/Options button" to="UI" method="_on_options_button_pressed"]
+[connection signal="toggled" from="UI/MarginContainer/Container/Mine button" to="UI" method="_on_dig_button_toggled"]
