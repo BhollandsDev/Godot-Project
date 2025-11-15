@@ -96,8 +96,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 		
 func _update_tile_highlights():
-	
-		
 	if Input.is_action_pressed("ui_shift"):
 		#print("true")
 		user_interface.mine_button.button_pressed = true
@@ -170,19 +168,3 @@ func draw_grid_lines():
 			draw_line(Vector2(i * (32 * 32), cam.y + size.y + 100), Vector2(i * (32 * 32), cam.y - size.y - 100), grid_line_color, (grid_line_width * 2))
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
-
-
-## dig operation to be moved later ##
-#func assign_dig_job(tiles: Array[Vector2i]):
-	#for tile in tiles:
-		#tile_jobs[tile] = "dig"
-		#
-#func set_dig_tiles(tiles: Array[Vector2i]):
-	#dig_tiles = tiles
-	#queue_redraw()
-#
-#func perform_dig(tile: Vector2i):
-	##ground.set_cell(0, tile, -1)
-	#ground.erase_cell(tile)
-	##ground.set_cells_terrain_connect(tile, terrain_set, 1, false)
-	#dig_tiles.erase(tile)

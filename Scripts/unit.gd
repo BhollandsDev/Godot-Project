@@ -10,6 +10,8 @@ class_name Unit
 @onready var idle_state: LimboState = $"Main State Machine/Idle State"
 @onready var walking_state: LimboState = $"Main State Machine/Walking State"
 @onready var main_state_machine: LimboHSM = $"Main State Machine"
+@onready var ground = get_node("../../Map Generator/ground")
+@onready var selection_manager = get_node("../../Selection Draw")
 
 
 
@@ -21,16 +23,15 @@ var main_sm : LimboHSM
 var selection_rect : Rect2
 var selection_width : int
 var previous_position: Vector2
-
+var current_tile_pos : Vector2i
 #var state := "idle"
-var dig_target : Vector2
-var dig_hits : int = 0
-const DIG_HITS_REQUIRED : int = 5
+#var dig_target : Vector2
+#var dig_hits : int = 0
+#const DIG_HITS_REQUIRED : int = 5
 
 ## Jobs assignment
 var current_job := Vector2i(0, 0)
-@onready var ground = get_node("../../Map Generator/ground")
-@onready var selection_manager = get_node("../../Selection Draw")
+
 #setter flag variable for selection of unit
 #@onready var selection_manager: Node2D = $"Selection Draw"
 
@@ -53,8 +54,6 @@ func _ready() -> void:
 	initiate_state_machine()
 	
 func initiate_state_machine():
-	
-	
 	main_state_machine.add_transition(idle_state, walking_state, "move_to_target")
 	main_state_machine.add_transition(main_state_machine.ANYSTATE, idle_state, "state_ended")
 	
@@ -76,23 +75,22 @@ func _draw():
 #get the next position through Navigation Agent
 func _physics_process(delta: float) -> void:
 ##	#	return if navigation is finished
-	#print(delta)
+	#current_tile_pos = ground.local_to_map(ground.to_local(position))
 	animation(delta)
 	var next_position = nav_agent.get_next_path_position()
 	var direction = (next_position - global_position).normalized()
 	velocity = round(direction * speed)
-	if current_job:
-			main.move_to_position(ground, current_job)
+	#if current_job:
+			#main.move_to_position(ground, current_job)
+			#if current_job == current_tile_pos:
+				#print("matches")
 	
+
 	
-	
+		
+		
 	on_move_finished()
 	
-	#if not current_job:
-		#current_job = get_next_dig_job()
-	#if current_job:
-		#main.move_to_position(ground, current_job)
-		#_on_reached_job_target()
 	move_and_slide()
 	
 #func to select the unit
@@ -125,14 +123,11 @@ func on_move_finished():
 		velocity = Vector2.ZERO
 		if not current_job:
 			current_job = get_next_dig_job()
-		#if current_job:
-			#main.move_to_position(ground, current_job)
-			#_on_reached_job_target()
 
 #flip the sprite in the direction of velocity
 func animation(_delta):
 	if velocity.length() > 0:
-		print(velocity)
+		#print(velocity)
 		if velocity.x < 0:
 			$Sprite2D.flip_h = true
 		elif velocity.x > 0:
@@ -146,8 +141,10 @@ func _on_unit_moved():
 	
 
 func get_next_dig_job() -> Vector2i:
+	
 	if selection_manager.tile_jobs.dig != null:
 		for tile in selection_manager.tile_jobs.dig:
+			 
 			return tile
 		return Vector2i(0,0)
 	else:
@@ -155,10 +152,12 @@ func get_next_dig_job() -> Vector2i:
 
 func _on_reached_job_target():
 	if current_job:
-		print(selection_manager.tile_jobs.dig)
+		#print(selection_manager.tile_jobs.dig)
 		for tile in selection_manager.tile_jobs.dig:
 			current_job = tile
 			map_generator.perform_dig(current_job)
+			selection_manager.highlighted_tiles.erase(current_job)
+			selection_manager.queue_redraw()
 			selection_manager.tile_jobs.dig.erase(current_job)
 			if selection_manager.tile_jobs.dig == []:
 				#print(selection_manager.tile_jobs.dig)

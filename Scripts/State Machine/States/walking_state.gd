@@ -5,10 +5,14 @@ extends LimboState
 @onready var unit: Unit = $"../.."
 @onready var nav_agent: NavigationAgent2D = $"../../NavigationAgent2D"
 @onready var animation_player: AnimationPlayer = $"../../AnimationPlayer"
+@onready var ground = get_node("/root/Main/Map Generator/ground")
+@onready var main = get_node("/root/Main")
+
+
 
 func _enter() -> void:
 	animation_player.play("run")
-	print("walking entered")
+	#print("walking entered")
 func _process(delta: float) -> void:
 	pass
 	
@@ -18,9 +22,8 @@ func _update(delta: float) -> void:
 	#on_move_finished()
 	if unit.velocity == Vector2.ZERO:
 		dispatch("state_ended")
-		if unit.current_job:
-			unit._on_reached_job_target()
 		
+			
 		print("moved finished")
 		#_on_reached_job_target()
 	
