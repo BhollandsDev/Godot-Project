@@ -1,11 +1,20 @@
 extends CharacterBody2D
 
+class_name Unit
+
 @onready var main = $"../../../Main"
 @onready var nav_agent = $NavigationAgent2D
 @onready var animation_player = $AnimationPlayer
+@onready var map_generator = get_node("../../Map Generator")
 
-signal  dig_complete(target_pos: Vector2)
+@onready var idle_state: LimboState = $"Main State Machine/Idle State"
+@onready var walking_state: LimboState = $"Main State Machine/Walking State"
+@onready var main_state_machine: LimboHSM = $"Main State Machine"
 
+
+
+
+var main_sm : LimboHSM
 #set speed
 @export var speed : int
 # every unit has their own selection box when selected
@@ -13,12 +22,17 @@ var selection_rect : Rect2
 var selection_width : int
 var previous_position: Vector2
 
-var state := "idle"
+#var state := "idle"
 var dig_target : Vector2
 var dig_hits : int = 0
 const DIG_HITS_REQUIRED : int = 5
 
+## Jobs assignment
+var current_job := Vector2i(0, 0)
+@onready var ground = get_node("../../Map Generator/ground")
+@onready var selection_manager = get_node("../../Selection Draw")
 #setter flag variable for selection of unit
+#@onready var selection_manager: Node2D = $"Selection Draw"
 
 var select_mode : bool = false:
 	set(value):
@@ -34,39 +48,52 @@ var select_mode : bool = false:
 		
 #setting the name to Unit
 func _ready() -> void:
-	name = "Unit"
-	#connect("tree_exited", Callable(self, "_on_tree_exited"))
 	previous_position = position
 	nav_agent.avoidance_enabled = true
+	initiate_state_machine()
+	
+func initiate_state_machine():
 	
 	
+	main_state_machine.add_transition(idle_state, walking_state, "move_to_target")
+	main_state_machine.add_transition(main_state_machine.ANYSTATE, idle_state, "state_ended")
 	
+	main_state_machine.initial_state = idle_state
+	main_state_machine.initialize(self)
+	main_state_machine.set_active(true)
 	
+
 func set_previous_position(pos: Vector2):
 	previous_position = pos
 #unit selection box is getting drawn
 func _draw():
 	draw_rect(selection_rect, Color.GREEN, false, selection_width)
 	
-
+#func _process(delta: float) -> void:
+	#
+	#print(current_job)
+	
 #get the next position through Navigation Agent
 func _physics_process(delta: float) -> void:
-#	#	return if navigation is finished
-	if nav_agent.is_navigation_finished():
-		start_digging()
-		#play idle when navigation stops
-		if animation_player.current_animation != "idle":
-			animation_player.play("idle")
-		return
-	#call animation flip function
+##	#	return if navigation is finished
+	#print(delta)
 	animation(delta)
 	var next_position = nav_agent.get_next_path_position()
 	var direction = (next_position - global_position).normalized()
 	velocity = round(direction * speed)
+	if current_job:
+			main.move_to_position(ground, current_job)
 	
+	
+	
+	on_move_finished()
+	
+	#if not current_job:
+		#current_job = get_next_dig_job()
+	#if current_job:
+		#main.move_to_position(ground, current_job)
+		#_on_reached_job_target()
 	move_and_slide()
-	
-	
 	
 #func to select the unit
 func select():
@@ -88,16 +115,24 @@ func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> vo
 				#main.selected_units = [self] #update the selected unit from the Unit manger
 				self.add_to_group("Selected Units")
 
+
 #func to set target position
 func move_to(target_position):
 	nav_agent.target_position = target_position
 
-#moving will play running animation
-	animation_player.play("run")
+func on_move_finished():
+	if nav_agent.is_navigation_finished():
+		velocity = Vector2.ZERO
+		if not current_job:
+			current_job = get_next_dig_job()
+		#if current_job:
+			#main.move_to_position(ground, current_job)
+			#_on_reached_job_target()
 
 #flip the sprite in the direction of velocity
 func animation(_delta):
 	if velocity.length() > 0:
+		print(velocity)
 		if velocity.x < 0:
 			$Sprite2D.flip_h = true
 		elif velocity.x > 0:
@@ -107,28 +142,27 @@ func _on_unit_moved():
 	main.update_unit_position(previous_position, position)
 	previous_position = position
 	
-func _on_stop_moving():
-	set_physics_process(false)
+
 	
-func command_dig(target_pos : Vector2):
-	dig_target = target_pos
-	state = "idle"
-	nav_agent.target_position = target_pos
-	
-func start_digging():
-	$AnimationPlayer.play("run")
-	var dig_timer = Timer.new()
-	dig_timer.wait_time = 0.5
-	dig_timer.one_shot = false
-	dig_timer.connect("timeout", Callable(self, "_on_dig_hit"))
-	add_child(dig_timer)
-	dig_timer.start()
-	
-func _on_dig_hit():
-	dig_hits += 1
-	if dig_hits >= DIG_HITS_REQUIRED:
-		emit_signal("dig_complete", dig_target)
-		state = "idle"
-		dig_hits = 0
+
+func get_next_dig_job() -> Vector2i:
+	if selection_manager.tile_jobs.dig != null:
+		for tile in selection_manager.tile_jobs.dig:
+			return tile
+		return Vector2i(0,0)
+	else:
+		return Vector2i(0,0)
+
+func _on_reached_job_target():
+	if current_job:
+		print(selection_manager.tile_jobs.dig)
+		for tile in selection_manager.tile_jobs.dig:
+			current_job = tile
+			map_generator.perform_dig(current_job)
+			selection_manager.tile_jobs.dig.erase(current_job)
+			if selection_manager.tile_jobs.dig == []:
+				#print(selection_manager.tile_jobs.dig)
+				current_job = Vector2i(0 , 0)
+			#print(selection_manager.tile_jobs.dig)
 	
 	

@@ -1,8 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://clx3f8140u1uf"]
+[gd_scene load_steps=11 format=3 uid="uid://clx3f8140u1uf"]
 
 [ext_resource type="Script" uid="uid://c68tccm4w3p5e" path="res://Scripts/unit.gd" id="1_8omp6"]
 [ext_resource type="Texture2D" uid="uid://d0yg1biiac8wl" path="res://Sprites/Unit Sprites/run.png" id="2_8omp6"]
 [ext_resource type="Texture2D" uid="uid://cagps604db8ks" path="res://Sprites/Unit Sprites/idle.png" id="3_lpvrq"]
+[ext_resource type="Script" uid="uid://cptjbsnyuoqwr" path="res://Scripts/State Machine/States/idle_state.gd" id="4_3rt3l"]
+[ext_resource type="Script" uid="uid://c7pnlrsvp40yv" path="res://Scripts/State Machine/States/walking_state.gd" id="5_bot63"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_c86kq"]
 size = Vector2(12, 12)
@@ -162,5 +164,13 @@ shape = SubResource("RectangleShape2D_c86kq")
 libraries = {
 &"": SubResource("AnimationLibrary_tb11o")
 }
+
+[node name="Main State Machine" type="LimboHSM" parent="."]
+
+[node name="Idle State" type="LimboState" parent="Main State Machine"]
+script = ExtResource("4_3rt3l")
+
+[node name="Walking State" type="LimboState" parent="Main State Machine"]
+script = ExtResource("5_bot63")
 
 [connection signal="input_event" from="." to="." method="_on_input_event"]

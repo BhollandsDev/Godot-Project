@@ -25,6 +25,11 @@ extends Node2D
 @export var path_visual_line_width: int = 2
 @export var path_visual_line_color: Color = Color.RED
 
+## Dig vars
+var tile_jobs := {
+	dig = null
+}
+var dig_tiles : Array[Vector2i] = []
 
 var selected_tiles: Array = []
 
@@ -57,11 +62,6 @@ func _draw():
 		#draw_rect(rect, Color.YELLOW, false, 2)
 	
 func _unhandled_input(event: InputEvent) -> void:
-	#if event.is_action_pressed("ui_shift"):
-		#print("pressed")
-	#elif event.is_action_released("ui_shift"):
-		#print("released")
-	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #and not mine_selection_drawing:
 		if event.pressed:
 			if user_interface.mine_button.button_pressed:
@@ -83,7 +83,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if event.is_pressed():
-			main.move_to_position(water, get_tile_pos(get_global_mouse_position()))
+			main.move_to_position(ground, get_tile_pos(get_global_mouse_position()))
+			#main.move_to_position(get_tile_pos(get_global_mouse_position()))
 			
 	if event is InputEventMouseMotion and selection_drawing || tile_selection_enable_start:
 		end_pos = get_global_mouse_position()
@@ -122,7 +123,8 @@ func _update_tile_highlights():
 				if not highlighted_tiles.has(t):
 					highlighted_tiles.append(t) 
 		highlighted_tiles = tiles
-	
+		tile_jobs.dig = tiles
+		
 		
 	
 		queue_redraw()
@@ -134,9 +136,8 @@ func selection_draw() -> void:
 			draw_rect(selection_rect_local, selection_rect_color, selection_rect_filled, selection_rect_width)
 
 func get_tile_pos(global_pos):
-	var local_pos = water.to_local(global_pos)
-	var tile_pos = water.local_to_map(local_pos)
-	
+	var local_pos = ground.to_local(global_pos)
+	var tile_pos = ground.local_to_map(local_pos)
 	return tile_pos
 
 
@@ -169,3 +170,19 @@ func draw_grid_lines():
 			draw_line(Vector2(i * (32 * 32), cam.y + size.y + 100), Vector2(i * (32 * 32), cam.y - size.y - 100), grid_line_color, (grid_line_width * 2))
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
+
+
+## dig operation to be moved later ##
+#func assign_dig_job(tiles: Array[Vector2i]):
+	#for tile in tiles:
+		#tile_jobs[tile] = "dig"
+		#
+#func set_dig_tiles(tiles: Array[Vector2i]):
+	#dig_tiles = tiles
+	#queue_redraw()
+#
+#func perform_dig(tile: Vector2i):
+	##ground.set_cell(0, tile, -1)
+	#ground.erase_cell(tile)
+	##ground.set_cells_terrain_connect(tile, terrain_set, 1, false)
+	#dig_tiles.erase(tile)

@@ -4,7 +4,7 @@ extends Node2D
 @onready var ground_tileset: TileMapLayer = $ground
 @onready var ground_2_tileset: TileMapLayer = $ground2
 @export var noise := FastNoiseLite.new()
-
+@onready var selection_manager = get_node("../Selection Draw")
 
 var source_id := 0
 var terrain_set := 0
@@ -124,4 +124,6 @@ func _on_unit_dig_complete(target_pos: Vector2):
 	ground_tileset.set_cell(Vector2i(cell.x, cell.y), -1)
 	#update_edges(cell)
 
-	
+func perform_dig(tile: Vector2i):
+	ground_tileset.erase_cell(tile)
+	selection_manager.dig_tiles.erase(tile)

@@ -71,6 +71,8 @@ func position_occupied(pos: Vector2) -> bool:
 			return true
 	return false
 	
+
+
 func move_to_position(layer : TileMapLayer, tile_pos):
 	var selected_units = selected_units_group(get_tree().get_nodes_in_group("Selected Units"))
 	var formation = get_formation(tile_pos)
