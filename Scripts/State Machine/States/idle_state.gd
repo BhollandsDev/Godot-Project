@@ -14,6 +14,7 @@ func _enter() -> void:
 	animation_player.play("idle")
 	#print("idle entered")
 	unit.current_tile_pos = unit.ground.local_to_map(ground.to_local(unit.position))
+	print(unit.current_tile_pos)
 	#print(unit.current_tile_pos)
 	
 	if unit.current_job == unit.current_tile_pos:

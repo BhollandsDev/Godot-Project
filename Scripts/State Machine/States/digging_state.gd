@@ -11,21 +11,11 @@ extends LimboState
 
 
 func _enter() -> void:
-	animation_player.play("run")
-	#print("walking entered")
-
+	pass
 	
+func _process(delta: float) -> void:
+	pass
 	
 
 func _update(delta: float) -> void:
-	#if unit.nav_agent.is_navigation_finished():# && nav_agent.is_target_reached():
-		#unit.velocity = Vector2.ZERO
-		#dispatch("state_ended")
-		
-	#on_move_finished()
-	if unit.velocity == Vector2.ZERO:
-		dispatch("state_ended")
-		
-			
-		print("moved finished")
-		#_on_reached_job_target()
+	pass

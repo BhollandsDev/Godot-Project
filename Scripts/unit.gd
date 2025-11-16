@@ -84,12 +84,13 @@ func _physics_process(delta: float) -> void:
 			#main.move_to_position(ground, current_job)
 			#if current_job == current_tile_pos:
 				#print("matches")
-	
+	if nav_agent.is_navigation_finished():
+		velocity = Vector2.ZERO
 
 	
 		
 		
-	on_move_finished()
+	#on_move_finished()
 	
 	move_and_slide()
 	
@@ -118,11 +119,11 @@ func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> vo
 func move_to(target_position):
 	nav_agent.target_position = target_position
 
-func on_move_finished():
-	if nav_agent.is_navigation_finished():
-		velocity = Vector2.ZERO
-		if not current_job:
-			current_job = get_next_dig_job()
+#func on_move_finished():
+	#if nav_agent.is_navigation_finished():
+		#velocity = Vector2.ZERO
+		#if not current_job:
+			#current_job = get_next_dig_job()
 
 #flip the sprite in the direction of velocity
 func animation(_delta):
@@ -141,20 +142,20 @@ func _on_unit_moved():
 	
 
 func get_next_dig_job() -> Vector2i:
-	
 	if selection_manager.tile_jobs.dig != null:
 		for tile in selection_manager.tile_jobs.dig:
-			 
+			
 			return tile
 		return Vector2i(0,0)
 	else:
 		return Vector2i(0,0)
 
 func _on_reached_job_target():
+	
 	if current_job:
-		#print(selection_manager.tile_jobs.dig)
+		print(current_job)
 		for tile in selection_manager.tile_jobs.dig:
-			current_job = tile
+			current_job = tile 
 			map_generator.perform_dig(current_job)
 			selection_manager.highlighted_tiles.erase(current_job)
 			selection_manager.queue_redraw()
