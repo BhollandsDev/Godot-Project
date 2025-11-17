@@ -101,7 +101,6 @@ func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> vo
 				if unit != self:
 					unit.remove_from_group("Selected Units")
 					unit.deselect()
-				#main.selected_units = [self] #update the selected unit from the Unit manger
 				self.add_to_group("Selected Units")
 
 

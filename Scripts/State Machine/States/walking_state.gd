@@ -9,12 +9,13 @@ extends LimboState
 @onready var animation_player: AnimationPlayer = $"../../AnimationPlayer"
 @onready var ground = get_node("/root/Main/Map Generator/ground")
 @onready var main = get_node("/root/Main")
-
+@onready var selection_manager = get_node("/root/Main/Selection Draw")
 
 
 func _enter() -> void:
 	animation_player.play("run")
-
+	if selection_manager.idle_units.has(unit):
+			selection_manager.idle_units.erase(unit)
 	
 	
 

@@ -24,11 +24,6 @@ extends Node2D
 @export var path_visual_line_width: int = 2
 @export var path_visual_line_color: Color = Color.RED
 var test := true
-## Dig vars
-#var tile_jobs := {
-	#dig = null
-#}
-
 
 var selected_tiles: Array = []
 
@@ -40,6 +35,8 @@ var tile_selection_enable_start := false
 var highlighted_tiles: Array = []
 var claimed_tiles := {}
 
+var idle_units := []
+
 var start_pos : Vector2
 var end_pos : Vector2
 
@@ -47,11 +44,11 @@ var end_pos : Vector2
 func _ready() -> void:
 	process_priority = 1
 
-#func _physics_process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	##assign_jobs()
 	#request_dig_job(get_tree().get_nodes_in_group("Units"))
-	#
-	
+	#get_idle_units()
+	print(idle_units)
 func _draw():
 	
 	draw_grid_lines()
@@ -165,51 +162,27 @@ func draw_grid_lines():
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
 
-func set_next_dig() -> Vector2i:
+func set_next_dig1() -> Vector2i:
 	if highlighted_tiles.size() == 0:
 		return Vector2i.ZERO
 	return highlighted_tiles[0]
 
-#func set_next_dig() -> Vector2i:
-	#for tile in highlighted_tiles:
-		#if tile not in claimed_tiles:
-			#print(tile)
-			#claimed_tiles[tile] = true
-			#print(claimed_tiles)
-			#return tile
-	#return Vector2i.ZERO
+
 func request_dig_job(unit) -> Vector2i:
 	for tile in highlighted_tiles:
 		if tile not in claimed_tiles:
 			claimed_tiles[tile] = unit
 			return tile
 	return Vector2i.ZERO
-	#highlighted_tiles.has()
-#func assign_jobs():# -> Vector2i:
-	#if test:
-		##for unit in get_tree().get_nodes_in_group("Units"):
-			##if unit.main_state_machine.get_active_state() == unit.idle_state:
-				##print(unit.name, " idle")
-	##print(selected_units)
-		#if highlighted_tiles.size() > 0:
-		##while highlighted_tiles.size() > 0:
-			#if get_tree().get_nodes_in_group("Units"):
-			##print(get_tree().get_nodes_in_group("Units").size())
-				#for unit in get_tree().get_nodes_in_group("Units"):
-					#if unit.main_state_machine.get_active_state() == unit.idle_state:
-						#print(unit.name, " idle")
-						#unit.assigned_jobs.append(highlighted_tiles[0])
-						##main.move_to_position(ground, highlighted_tiles[0])
-						#highlighted_tiles.erase(highlighted_tiles[0])
-						##if  highlighted_tiles[0] == unit.current_tile_pos:
-							##if unit.main_state_machine.get_active_state() == unit.idle_state:
-								##map_generator.perform_dig(highlighted_tiles[0])
-						##return highlighted_tiles[0]
-								#
-						#
-				##print(unit.main_state_machine.get_active_state())
-				##print("more than")
-				#
-			##for unit in get_tree().get_nodes_in_group("Selected Units"):
-				##print(unit)
-	##return
+
+#func get_idle_units():
+	#for unit in get_tree().get_nodes_in_group("Units"):
+		#if unit.current_job == Vector2i.ZERO:
+			##print(unit.current_job)
+			#if unit.main_state_machine.get_active_state() == unit.idle_state:
+				#if not idle_units.has(unit):
+					#idle_units.append(unit)
+		#elif unit.main_state_machine.get_active_state() != unit.idle_state:
+			#if idle_units.has(unit):
+				#idle_units.erase(unit)
+				

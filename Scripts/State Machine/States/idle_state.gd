@@ -14,43 +14,17 @@ extends LimboState
 
 func _enter() -> void:
 	animation_player.play("idle")
-	
+	selection_manager.idle_units.append(unit)
 
 func _update(_delta: float) -> void:
 	if unit.current_job:
+		if selection_manager.idle_units.has(unit):
+			selection_manager.idle_units.erase(unit)
 		if unit.current_job != unit.current_tile_pos:
-			#main.move_to_position(ground, unit.current_job)
-			#main.move_to_job_pos(ground, unit.current_job)
+
 			unit.move_to(ground.map_to_local(unit.current_job))
 		elif unit.current_job == unit.current_tile_pos:
 			dispatch("start_digging")
-		#print("has job")
-	#if selection_manager.highlighted_tiles.size() > 0:
-		##print("job pos, ",unit.set_next_dig())
-		##print("unit pos,",unit.current_tile_pos)
-		#if  unit.set_next_dig() == unit.current_tile_pos:
-			#map_generator.perform_dig(unit.set_next_dig())
-		#elif unit.set_next_dig() != unit.current_tile_pos:
-			#main.move_to_position(ground, unit.set_next_dig())
-	#elif selection_manager.highlighted_tiles.size() <= 0:
-		##print("empty")
-		#pass
-	#print(unit.name, unit.current_job)
-	#if unit.assigned_jobs.size() > 0:
-		#if unit.assigned_jobs[0] != unit.current_tile_pos:
-			#main.move_to_position(ground, unit.assigned_jobs[0])
-			##print(unit, " assigned jobs, ", unit.assigned_jobs)
-		##dispatch("move_to_target")
-		###print("job pos, ",unit.set_next_dig())
-		###print("unit pos,",unit.current_tile_pos)
-		#if  unit.assigned_jobs[0] == unit.current_tile_pos:
-			##map_generator.perform_dig(unit.assigned_jobs[0])
-			#unit.assigned_jobs.erase(unit.assigned_jobs[0])
-		##elif selection_manager.set_next_dig() != unit.current_tile_pos:
-			##main.move_to_position(ground, selection_manager.set_next_dig())
-	##elif selection_manager.highlighted_tiles.size() <= 0:
-		###print("empty")
-	pass
 	
 	if unit.velocity.x != 0 or not nav_agent.is_navigation_finished():
 		dispatch("move_to_target")

@@ -55,7 +55,7 @@ func add_unit():
 	unit.nav_agent.debug_use_custom = path_visualization_custom_color_enable
 	unit.nav_agent.debug_path_custom_color = path_visualization_color
 	unit.nav_agent.debug_path_custom_line_width = path_line_width
-	print(get_tree().get_nodes_in_group("Units"))
+	#print(get_tree().get_nodes_in_group("Units"))
 func position_occupied(pos: Vector2) -> bool:
 	for p in occupied_positions:
 		if p == pos:
@@ -63,11 +63,11 @@ func position_occupied(pos: Vector2) -> bool:
 	return false
 	
 
-func move_to_job_pos(layer: TileMapLayer, tile_pos):
-	var unit = get_tree().get_nodes_in_group("Units")
-	
-	for u in unit:
-		u.move_to(layer.map_to_local(tile_pos))
+#func move_to_job_pos(layer: TileMapLayer, tile_pos):
+	#var unit = get_tree().get_nodes_in_group("Units")
+	#
+	#for u in unit:
+		#u.move_to(layer.map_to_local(tile_pos))
 	
 	
 
