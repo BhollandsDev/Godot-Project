@@ -27,16 +27,6 @@ var path_line_width : float
 func _ready() -> void:
 	spawn_parent = units_container
 
-
-### check for units in a group ###
-
-
-
-
-### Unit Manager ###
-
-
-
 func add_unit():
 	if not target_scene or not spawn_parent:
 		push_error("UnitManger: target_scene or spawn_parent not set")
@@ -55,6 +45,7 @@ func add_unit():
 		index += 1
 	unit.position = positions 
 	spawn_parent.add_child(unit)
+	unit.name = "Unit_%s" % str(spawn_parent.get_child_count())
 	occupied_positions.append(positions)
 	if unit.has_method("set_previous_position"):
 		unit.set_previous_position(positions)
@@ -64,13 +55,23 @@ func add_unit():
 	unit.nav_agent.debug_use_custom = path_visualization_custom_color_enable
 	unit.nav_agent.debug_path_custom_color = path_visualization_color
 	unit.nav_agent.debug_path_custom_line_width = path_line_width
-	
+	print(get_tree().get_nodes_in_group("Units"))
 func position_occupied(pos: Vector2) -> bool:
 	for p in occupied_positions:
 		if p == pos:
 			return true
 	return false
 	
+
+func move_to_job_pos(layer: TileMapLayer, tile_pos):
+	var unit = get_tree().get_nodes_in_group("Units")
+	
+	for u in unit:
+		u.move_to(layer.map_to_local(tile_pos))
+	
+	
+
+
 
 
 func move_to_position(layer : TileMapLayer, tile_pos):
@@ -80,13 +81,12 @@ func move_to_position(layer : TileMapLayer, tile_pos):
 		selected_units[i].move_to(layer.map_to_local(formation[i]))
 		
 func get_formation(tile_pos):
-	#selected_units(get_tree().get_nodes_in_group("Selected Units"))
 	var selected_units = selected_units_group(get_tree().get_nodes_in_group("Selected Units"))
 	var formation = []
-	#var unit_count = selected_units(get_tree().get_nodes_in_group("Selected Units")).size
+
 	var unit_count = selected_units.size()
 	var formation_size = ceil(sqrt(unit_count))
-	#loop over the tiles for the units position
+
 	var index = 0
 	for x in range(-formation_size / 2, formation_size / 2 + 1):
 		for y in range(-formation_size / 2, formation_size / 2 + 1):

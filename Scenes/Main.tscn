@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cp0uea88vtojc" path="res://Scenes/map_generator.tscn" id="5_ynf5e"]
 [ext_resource type="PackedScene" uid="uid://k7450nbtqvyt" path="res://Scenes/in_game_menu.tscn" id="8_344ge"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" groups=["UnitsContainer"]]
 script = ExtResource("1_kry3j")
 
 [node name="Map Generator" parent="." instance=ExtResource("5_ynf5e")]

@@ -25,7 +25,6 @@ enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
 [global_group]
 
 MainCamera=""
-UnitsContainer=""
 Units="Units Group"
 "Selected Units"=""
 "Path Visualizer"=""

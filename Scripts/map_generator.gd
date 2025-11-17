@@ -126,4 +126,8 @@ func _on_unit_dig_complete(target_pos: Vector2):
 
 func perform_dig(tile: Vector2i):
 	ground_tileset.erase_cell(tile)
-	selection_manager.dig_tiles.erase(tile)
+	if selection_manager.highlighted_tiles.has(tile):
+		selection_manager.highlighted_tiles.erase(tile)
+		selection_manager.queue_redraw()
+		#selection_manager.highlighted_tiles.erase(tile)
+		#selection_manager.queue_redraw()

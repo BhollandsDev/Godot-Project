@@ -1,8 +1,7 @@
 extends Node2D
 @onready var main: Node2D = $".."
 
-#@onready var main = $"../../../Main"
-#@onready var map_generator: Node2D = $"../Map Generator"
+
 @onready var map_generator = get_node("../Map Generator")
 @onready var water = get_node("../Map Generator/water")
 @onready var ground = get_node("../Map Generator/ground")
@@ -24,12 +23,12 @@ extends Node2D
 @export var path_visual_enable : bool = false
 @export var path_visual_line_width: int = 2
 @export var path_visual_line_color: Color = Color.RED
-
+var test := true
 ## Dig vars
-var tile_jobs := {
-	dig = null
-}
-var dig_tiles : Array[Vector2i] = []
+#var tile_jobs := {
+	#dig = null
+#}
+
 
 var selected_tiles: Array = []
 
@@ -39,6 +38,7 @@ var selection_drawing : bool = false
 var tile_selection_enable := false
 var tile_selection_enable_start := false
 var highlighted_tiles: Array = []
+var claimed_tiles := {}
 
 var start_pos : Vector2
 var end_pos : Vector2
@@ -47,7 +47,11 @@ var end_pos : Vector2
 func _ready() -> void:
 	process_priority = 1
 
-
+#func _physics_process(delta: float) -> void:
+	##assign_jobs()
+	#request_dig_job(get_tree().get_nodes_in_group("Units"))
+	#
+	
 func _draw():
 	
 	draw_grid_lines()
@@ -55,12 +59,7 @@ func _draw():
 	for tiles in highlighted_tiles:
 		var tile_pos = tiles * tile_size
 		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.RED, false, 2.0)
-	#if tile_selection_enable_start:
-		#var rect = Rect2(start_pos, end_pos - start_pos).abs()
-		##var rect = Rect2(tile_selection_start, tile_selection_end - tile_selection_start).abs()
-		##rect = rect.abs()
-		#draw_rect(rect, Color.YELLOW, false, 2)
-	
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #and not mine_selection_drawing:
 		if event.pressed:
@@ -81,6 +80,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			tile_selection_enable_start = false
 			queue_redraw()
 			
+			
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if event.is_pressed():
 			main.move_to_position(ground, get_tile_pos(get_global_mouse_position()))
@@ -91,10 +91,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_unit_selection(selection_rect_local)
 		_update_tile_highlights()
 		queue_redraw()
-		
+		#assign_jobs()
 	
-		
-		
+
 func _update_tile_highlights():
 	if Input.is_action_pressed("ui_shift"):
 		#print("true")
@@ -121,10 +120,7 @@ func _update_tile_highlights():
 				if not highlighted_tiles.has(t):
 					highlighted_tiles.append(t) 
 		highlighted_tiles = tiles
-		tile_jobs.dig = tiles
-		
-		
-	
+		#tile_jobs.dig = tiles
 		queue_redraw()
 		
 func selection_draw() -> void:	
@@ -142,14 +138,14 @@ func get_tile_pos(global_pos):
 func get_unit_selection(converted_rect):
 	if selection_drawing:
 		for unit in get_tree().get_nodes_in_group("Units"):
-			
 			if converted_rect.has_point(unit.global_position):
 				unit.select()
 				unit.add_to_group("Selected Units")
+				
 			else:
 				unit.deselect()
 				unit.remove_from_group("Selected Units")
-		
+				
 		return converted_rect
 
 func draw_grid_lines():
@@ -168,3 +164,52 @@ func draw_grid_lines():
 			draw_line(Vector2(i * (32 * 32), cam.y + size.y + 100), Vector2(i * (32 * 32), cam.y - size.y - 100), grid_line_color, (grid_line_width * 2))
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
+
+func set_next_dig() -> Vector2i:
+	if highlighted_tiles.size() == 0:
+		return Vector2i.ZERO
+	return highlighted_tiles[0]
+
+#func set_next_dig() -> Vector2i:
+	#for tile in highlighted_tiles:
+		#if tile not in claimed_tiles:
+			#print(tile)
+			#claimed_tiles[tile] = true
+			#print(claimed_tiles)
+			#return tile
+	#return Vector2i.ZERO
+func request_dig_job(unit) -> Vector2i:
+	for tile in highlighted_tiles:
+		if tile not in claimed_tiles:
+			claimed_tiles[tile] = unit
+			return tile
+	return Vector2i.ZERO
+	#highlighted_tiles.has()
+#func assign_jobs():# -> Vector2i:
+	#if test:
+		##for unit in get_tree().get_nodes_in_group("Units"):
+			##if unit.main_state_machine.get_active_state() == unit.idle_state:
+				##print(unit.name, " idle")
+	##print(selected_units)
+		#if highlighted_tiles.size() > 0:
+		##while highlighted_tiles.size() > 0:
+			#if get_tree().get_nodes_in_group("Units"):
+			##print(get_tree().get_nodes_in_group("Units").size())
+				#for unit in get_tree().get_nodes_in_group("Units"):
+					#if unit.main_state_machine.get_active_state() == unit.idle_state:
+						#print(unit.name, " idle")
+						#unit.assigned_jobs.append(highlighted_tiles[0])
+						##main.move_to_position(ground, highlighted_tiles[0])
+						#highlighted_tiles.erase(highlighted_tiles[0])
+						##if  highlighted_tiles[0] == unit.current_tile_pos:
+							##if unit.main_state_machine.get_active_state() == unit.idle_state:
+								##map_generator.perform_dig(highlighted_tiles[0])
+						##return highlighted_tiles[0]
+								#
+						#
+				##print(unit.main_state_machine.get_active_state())
+				##print("more than")
+				#
+			##for unit in get_tree().get_nodes_in_group("Selected Units"):
+				##print(unit)
+	##return
