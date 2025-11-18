@@ -18,13 +18,15 @@ func _enter() -> void:
 
 func _update(_delta: float) -> void:
 	if unit.assigned_jobs:
+		#if main.is_point_on_navmap(unit.assigned_jobs[0]):
 		selection_manager.idle_units.erase(unit)
 		if unit.assigned_jobs[0] != unit.current_tile_pos:
 			unit.move_to(ground.map_to_local(unit.assigned_jobs[0]))
 		if unit.assigned_jobs[0] == unit.current_tile_pos:
 			dispatch("start_digging")
-	
-	
+		#elif main.is_point_on_navmap(unit.assigned_jobs[0]):
+			#unit.assigned_jobs.erase(unit.assigned_jobs[0])
+			
 	#if unit.current_job:
 		#if selection_manager.idle_units.has(unit):
 			#selection_manager.idle_units.erase(unit)

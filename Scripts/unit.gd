@@ -101,7 +101,15 @@ func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> vo
 
 
 func move_to(target_position):
-	nav_agent.target_position = target_position
+	if main.is_point_on_navmap(target_position):
+		#print(true)
+		nav_agent.target_position = target_position
+	else:
+		print("Not Reachable")
+		return
+		#print(nav_agent.is_target_reachable())
+	#print(nav_agent.is_target_reachable())
+	#nav_agent.target_position = target_position
 
 
 func animation(_delta):

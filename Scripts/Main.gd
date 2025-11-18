@@ -63,18 +63,6 @@ func position_occupied(pos: Vector2) -> bool:
 			return true
 	return false
 	
-
-#func move_to_job_pos(layer: TileMapLayer, tile_pos):
-	#var unit = get_tree().get_nodes_in_group("Units")
-	#
-	#for u in unit:
-		#u.move_to(layer.map_to_local(tile_pos))
-	
-	
-
-
-
-
 func move_to_position(layer : TileMapLayer, tile_pos):
 	var selected_units = selected_units_group(get_tree().get_nodes_in_group("Selected Units"))
 	var formation = get_formation(tile_pos)
@@ -115,3 +103,8 @@ func delete_selected_units():
 			print(selection_manager)
 			selection_manager.idle_units.erase(unit)
 			unit.queue_free()
+
+func is_point_on_navmap(point: Vector2, max_distance: float = 6.0) -> bool:
+	var map_rid: RID = get_world_2d().get_navigation_map()
+	var closest: Vector2 = NavigationServer2D.map_get_closest_point(map_rid, point)
+	return closest.distance_to(point) <= max_distance

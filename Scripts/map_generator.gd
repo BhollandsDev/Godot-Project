@@ -122,16 +122,17 @@ func _connect_ground_cells_in_batches(cells: Array) -> void:
 func _on_unit_dig_complete(target_pos: Vector2):
 	var cell = ground_tileset.local_to_map(target_pos)
 	ground_tileset.set_cell(Vector2i(cell.x, cell.y), -1)
-	#update_edges(cell)
 
+
+## erase ground tile when user request to be cleared by selection ##
 func perform_dig(tile: Vector2i):
 	ground_tileset.erase_cell(tile)
 	if selection_manager.claimed_tiles.has(tile):
+		print("ct ",true)
 		selection_manager.claimed_tiles.erase(tile)
 		selection_manager.queue_redraw()
-	
-	
 	if selection_manager.highlighted_tiles.has(tile):
+		print("ht ",true)
 		selection_manager.highlighted_tiles.erase(tile)
 		selection_manager.queue_redraw()
 		selection_manager.highlighted_tiles.erase(tile)

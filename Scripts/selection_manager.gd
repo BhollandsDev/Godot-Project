@@ -83,15 +83,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if event.is_pressed():
+			
 			main.move_to_position(ground, get_tile_pos(get_global_mouse_position()))
-			#main.move_to_position(get_tile_pos(get_global_mouse_position()))
 			
 	if event is InputEventMouseMotion and selection_drawing || tile_selection_enable_start:
 		end_pos = get_global_mouse_position()
 		get_unit_selection(selection_rect_local)
 		_update_tile_highlights()
 		queue_redraw()
-		#assign_jobs()
 	
 
 func _update_tile_highlights():
@@ -108,13 +107,20 @@ func _update_tile_highlights():
 		
 		for x in range(x1,x2 + 1):
 			for y in range(y1,y2 + 1):
-				tiles.append(Vector2i(x, y))
+					tiles.append(Vector2i(x, y))
 		if Input.is_action_pressed("ui_shift"):
 			for t in tiles:
 				if not highlighted_tiles.has(t):
 					highlighted_tiles.append(t) 
 		else:
 			highlighted_tiles = tiles
+		
+		highlighted_tiles = highlighted_tiles.filter(func(tile):
+			var world_pos = ground.map_to_local(tile)
+			return main.is_point_on_navmap(world_pos)
+		)
+		
+		
 		queue_redraw()
 		
 func selection_draw() -> void:	
@@ -159,18 +165,36 @@ func draw_grid_lines():
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
 
+#func request_dig_job(unit) -> Vector2i:
+	#if idle_units.is_empty():
+		#return Vector2i.ZERO
+	#for tile in highlighted_tiles:
+		#if tile not in claimed_tiles:
+			#if unit.assigned_jobs.size() < unit.job_limit:
+				#unit.assigned_jobs.append(tile)
+				#claimed_tiles[tile] = unit
+				#highlighted_tiles.erase(tile)
+				#queue_redraw()
+			#return tile
+	#return Vector2i.ZERO
 func request_dig_job(unit) -> Vector2i:
+
 	if idle_units.is_empty():
 		return Vector2i.ZERO
 	for tile in highlighted_tiles:
-		if tile not in claimed_tiles:
-			if unit.assigned_jobs.size() < unit.job_limit:
-				unit.assigned_jobs.append(tile)
-				claimed_tiles[tile] = unit
-				highlighted_tiles.erase(tile)
-				queue_redraw()
-			#print(claimed_tiles)
-			return tile
+		var world_pos = ground.map_to_local(tile)
+		if main.is_point_on_navmap(world_pos):
+			if tile not in claimed_tiles:
+				if unit.assigned_jobs.size() < unit.job_limit:
+					unit.assigned_jobs.append(tile)
+					claimed_tiles[tile] = unit
+					#print(claimed_tiles)
+					highlighted_tiles.erase(tile)
+					queue_redraw()
+				return tile
+			#else:
+				#highlighted_tiles.erase(tile)
+				#print("cant")
 	return Vector2i.ZERO
 
 func get_closest_unit_to_job(tile: Vector2i, units: Array) -> Unit:
@@ -181,10 +205,13 @@ func get_closest_unit_to_job(tile: Vector2i, units: Array) -> Unit:
 	var best_distance := INF
 	var world_pos = ground.map_to_local(tile)
 	
+	
+		#if main.is_point_on_navmap(world_pos):
 	for u in units:
 		var dist = u.global_position.distance_to(world_pos)
-		#var dist = u.current_tile_pos
+	#var dist = u.current_tile_pos
 		if dist < best_distance:
 			best_distance = dist
 			best_unit = u
 	return best_unit
+	
