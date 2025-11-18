@@ -2,7 +2,6 @@ extends LimboState
 
 
 @onready var main_state_machine: LimboHSM = $".."
-#@onready var unit: Unit = $"../.."
 @onready var unit: CharacterBody2D = $"../.."
 
 @onready var nav_agent: NavigationAgent2D = $"../../NavigationAgent2D"
@@ -17,9 +16,8 @@ func _enter() -> void:
 	if unit.assigned_jobs[0] == unit.current_tile_pos:
 		map_generator.perform_dig(unit.assigned_jobs[0])
 		unit.assigned_jobs.erase(unit.assigned_jobs[0])
-	#if selection_manager.idle_units.has(unit):
-			#selection_manager.idle_units.erase(unit)
+
 			
 func _update(_delta: float) -> void:
-	if unit.current_job == Vector2i.ZERO:
+	if not unit.assigned_jobs:
 		dispatch("state_ended")

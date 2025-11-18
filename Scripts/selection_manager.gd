@@ -48,7 +48,7 @@ func _physics_process(delta: float) -> void:
 	##assign_jobs()
 	for tile in highlighted_tiles:
 			request_dig_job(get_closest_unit_to_job(tile, idle_units))
-	print(highlighted_tiles)
+	#print(highlighted_tiles)
 func _draw():
 	
 	draw_grid_lines()
@@ -56,7 +56,10 @@ func _draw():
 	for tiles in highlighted_tiles:
 		var tile_pos = tiles * tile_size
 		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.RED, false, 2.0)
-
+	for tiles in claimed_tiles:
+		var tile_pos = tiles * tile_size
+		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.GREEN, false, 2.0)
+		
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #and not mine_selection_drawing:
 		if event.pressed:
@@ -164,6 +167,8 @@ func request_dig_job(unit) -> Vector2i:
 			if unit.assigned_jobs.size() < unit.job_limit:
 				unit.assigned_jobs.append(tile)
 				claimed_tiles[tile] = unit
+				highlighted_tiles.erase(tile)
+				queue_redraw()
 			#print(claimed_tiles)
 			return tile
 	return Vector2i.ZERO
@@ -183,14 +188,3 @@ func get_closest_unit_to_job(tile: Vector2i, units: Array) -> Unit:
 			best_distance = dist
 			best_unit = u
 	return best_unit
-	
-#func assign_job_to_closest_unit1(tile: Vector2i):
-	#if idle_units.is_empty():
-		#return
-	#
-	#var closest = get_closest_unit_to_job(tile, idle_units)
-	#if closest:
-		#closest.assigned_jobs.append(tile)
-	#
-	
-	

@@ -115,14 +115,3 @@ func animation(_delta):
 func _on_unit_moved():
 	main.update_unit_position(previous_position, position)
 	previous_position = position
-	
-
-func request_job():
-	if test:
-		
-		if main_state_machine.get_active_state() == idle_state:
-			if not current_job:
-				var job = selection_manager.request_dig_job(self)
-				if job != Vector2i.ZERO:
-					current_job = job
-					#print(name, " assigned jobs, ", current_job)
