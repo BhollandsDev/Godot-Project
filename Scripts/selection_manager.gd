@@ -46,13 +46,9 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	##assign_jobs()
-	#request_dig_job(get_tree().get_nodes_in_group("Units"))
-	#get_idle_units()
-	#print(idle_units)
-	#request_dig_job(assign_job_to_closest_unit())
 	for tile in highlighted_tiles:
 			request_dig_job(get_closest_unit_to_job(tile, idle_units))
-	#print(highlighted_tiles)
+	print(highlighted_tiles)
 func _draw():
 	
 	draw_grid_lines()
@@ -96,34 +92,26 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 
 func _update_tile_highlights():
-	if Input.is_action_pressed("ui_shift"):
-		#print("true")
-		user_interface.mine_button.button_pressed = true
-		tile_selection_enable_start = true
-		selection_drawing = false
 	if tile_selection_enable_start:
 		var start_local = ground.to_local(start_pos)
 		var end_local = ground.to_local(end_pos)
-		
 		var start_tile = ground.local_to_map(start_local)
 		var end_tile = ground.local_to_map(end_local)
-		
+		var tiles : Array[Vector2i] = []
 		var x1 = min(start_tile.x, end_tile.x)
 		var x2 = max(start_tile.x, end_tile.x)
 		var y1 = min(start_tile.y, end_tile.y)
 		var y2 = max(start_tile.y, end_tile.y)
-		var tiles = []
+		
 		for x in range(x1,x2 + 1):
 			for y in range(y1,y2 + 1):
 				tiles.append(Vector2i(x, y))
-		
-			for t in highlighted_tiles:
+		if Input.is_action_pressed("ui_shift"):
+			for t in tiles:
 				if not highlighted_tiles.has(t):
 					highlighted_tiles.append(t) 
-		highlighted_tiles = tiles
-		#tile_jobs.dig = tiles
-		#assign_job_to_closest_unit(highlighted_tiles[0])
-		
+		else:
+			highlighted_tiles = tiles
 		queue_redraw()
 		
 func selection_draw() -> void:	
@@ -168,15 +156,6 @@ func draw_grid_lines():
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
 
-#func set_next_dig1() -> Vector2i:
-	#if highlighted_tiles.size() == 0:
-		#return Vector2i.ZERO
-	#return highlighted_tiles[0]
-
-#func request_dig_job(tile) -> Vector2i:
-	#for tile in highlighted_tiles:
-		#
-
 func request_dig_job(unit) -> Vector2i:
 	if idle_units.is_empty():
 		return Vector2i.ZERO
@@ -205,13 +184,13 @@ func get_closest_unit_to_job(tile: Vector2i, units: Array) -> Unit:
 			best_unit = u
 	return best_unit
 	
-func assign_job_to_closest_unit1(tile: Vector2i):
-	if idle_units.is_empty():
-		return
-	
-	var closest = get_closest_unit_to_job(tile, idle_units)
-	if closest:
-		closest.assigned_jobs.append(tile)
-	
+#func assign_job_to_closest_unit1(tile: Vector2i):
+	#if idle_units.is_empty():
+		#return
+	#
+	#var closest = get_closest_unit_to_job(tile, idle_units)
+	#if closest:
+		#closest.assigned_jobs.append(tile)
+	#
 	
 	

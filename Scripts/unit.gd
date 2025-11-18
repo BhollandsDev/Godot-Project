@@ -76,11 +76,6 @@ func _physics_process(delta: float) -> void:
 		current_tile_pos = ground.local_to_map(ground.to_local(position))
 	_on_unit_moved()
 	move_and_slide()
-	#print(main_state_machine.get_active_state())
-	#request_job()
-	#print(current_job)
-		#print("idle")
-	print(self.name, assigned_jobs)
 	
 	
 	
