@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-#class_name Unit
+class_name Unit
 
 @onready var main = $"../../../Main"
 @onready var nav_agent = $NavigationAgent2D
@@ -13,9 +13,9 @@ extends CharacterBody2D
 @onready var main_state_machine: LimboHSM = $"Main State Machine"
 @onready var ground = get_node("../../Map Generator/ground")
 @onready var selection_manager = get_node("../../Selection Draw")
-var test := true
-
-
+var test := false
+var assigned_jobs := []
+@export var job_limit : int = 1
 
 
 #set speed
@@ -77,10 +77,10 @@ func _physics_process(delta: float) -> void:
 	_on_unit_moved()
 	move_and_slide()
 	#print(main_state_machine.get_active_state())
-	request_job()
+	#request_job()
 	#print(current_job)
 		#print("idle")
-	
+	print(self.name, assigned_jobs)
 	
 	
 	
@@ -124,9 +124,10 @@ func _on_unit_moved():
 
 func request_job():
 	if test:
+		
 		if main_state_machine.get_active_state() == idle_state:
 			if not current_job:
 				var job = selection_manager.request_dig_job(self)
 				if job != Vector2i.ZERO:
 					current_job = job
-					print(name, " assigned jobs, ", current_job)
+					#print(name, " assigned jobs, ", current_job)

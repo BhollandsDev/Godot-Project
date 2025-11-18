@@ -17,14 +17,22 @@ func _enter() -> void:
 	selection_manager.idle_units.append(unit)
 
 func _update(_delta: float) -> void:
-	if unit.current_job:
-		if selection_manager.idle_units.has(unit):
-			selection_manager.idle_units.erase(unit)
-		if unit.current_job != unit.current_tile_pos:
-
-			unit.move_to(ground.map_to_local(unit.current_job))
-		elif unit.current_job == unit.current_tile_pos:
+	if unit.assigned_jobs:
+		selection_manager.idle_units.erase(unit)
+		if unit.assigned_jobs[0] != unit.current_tile_pos:
+			unit.move_to(ground.map_to_local(unit.assigned_jobs[0]))
+		if unit.assigned_jobs[0] == unit.current_tile_pos:
 			dispatch("start_digging")
+	
+	
+	#if unit.current_job:
+		#if selection_manager.idle_units.has(unit):
+			#selection_manager.idle_units.erase(unit)
+		#if unit.current_job != unit.current_tile_pos:
+#
+			#unit.move_to(ground.map_to_local(unit.current_job))
+		#elif unit.current_job == unit.current_tile_pos:
+			#dispatch("start_digging")
 	
 	if unit.velocity.x != 0 or not nav_agent.is_navigation_finished():
 		dispatch("move_to_target")

@@ -34,7 +34,7 @@ var tile_selection_enable := false
 var tile_selection_enable_start := false
 var highlighted_tiles: Array = []
 var claimed_tiles := {}
-
+#var assigned_jobs := []
 var idle_units := []
 
 var start_pos : Vector2
@@ -48,7 +48,11 @@ func _physics_process(delta: float) -> void:
 	##assign_jobs()
 	#request_dig_job(get_tree().get_nodes_in_group("Units"))
 	#get_idle_units()
-	print(idle_units)
+	#print(idle_units)
+	#request_dig_job(assign_job_to_closest_unit())
+	for tile in highlighted_tiles:
+			request_dig_job(get_closest_unit_to_job(tile, idle_units))
+	#print(highlighted_tiles)
 func _draw():
 	
 	draw_grid_lines()
@@ -118,6 +122,8 @@ func _update_tile_highlights():
 					highlighted_tiles.append(t) 
 		highlighted_tiles = tiles
 		#tile_jobs.dig = tiles
+		#assign_job_to_closest_unit(highlighted_tiles[0])
+		
 		queue_redraw()
 		
 func selection_draw() -> void:	
@@ -162,27 +168,50 @@ func draw_grid_lines():
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
 
-func set_next_dig1() -> Vector2i:
-	if highlighted_tiles.size() == 0:
-		return Vector2i.ZERO
-	return highlighted_tiles[0]
+#func set_next_dig1() -> Vector2i:
+	#if highlighted_tiles.size() == 0:
+		#return Vector2i.ZERO
+	#return highlighted_tiles[0]
 
+#func request_dig_job(tile) -> Vector2i:
+	#for tile in highlighted_tiles:
+		#
 
 func request_dig_job(unit) -> Vector2i:
+	if idle_units.is_empty():
+		return Vector2i.ZERO
 	for tile in highlighted_tiles:
 		if tile not in claimed_tiles:
-			claimed_tiles[tile] = unit
+			if unit.assigned_jobs.size() < unit.job_limit:
+				unit.assigned_jobs.append(tile)
+				claimed_tiles[tile] = unit
+			#print(claimed_tiles)
 			return tile
 	return Vector2i.ZERO
 
-#func get_idle_units():
-	#for unit in get_tree().get_nodes_in_group("Units"):
-		#if unit.current_job == Vector2i.ZERO:
-			##print(unit.current_job)
-			#if unit.main_state_machine.get_active_state() == unit.idle_state:
-				#if not idle_units.has(unit):
-					#idle_units.append(unit)
-		#elif unit.main_state_machine.get_active_state() != unit.idle_state:
-			#if idle_units.has(unit):
-				#idle_units.erase(unit)
-				
+func get_closest_unit_to_job(tile: Vector2i, units: Array) -> Unit:
+	if units.is_empty():
+		return null
+	
+	var best_unit :Unit = null
+	var best_distance := INF
+	var world_pos = ground.map_to_local(tile)
+	
+	for u in units:
+		var dist = u.global_position.distance_to(world_pos)
+		#var dist = u.current_tile_pos
+		if dist < best_distance:
+			best_distance = dist
+			best_unit = u
+	return best_unit
+	
+func assign_job_to_closest_unit1(tile: Vector2i):
+	if idle_units.is_empty():
+		return
+	
+	var closest = get_closest_unit_to_job(tile, idle_units)
+	if closest:
+		closest.assigned_jobs.append(tile)
+	
+	
+	

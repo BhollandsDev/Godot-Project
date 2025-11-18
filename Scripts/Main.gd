@@ -2,12 +2,13 @@ extends Node2D
 
 
 @onready var units_container = $"Units Container"
-
+@onready var selection_manager := get_node("../Main/Selection Draw")
 
 var start_position = Vector2.ZERO
 var end_position = Vector2.ZERO
 
 #vars for instancing Units
+#var target_scene = Unit
 var target_scene = preload("res://Scenes/unit.tscn")
 var spawn_parent: Node2D = null
 
@@ -16,7 +17,7 @@ var spawn_offset = Vector2(20, 20)
 
 var units_per_row = 5
 var occupied_positions: Array = []
-var selection_manager: Node
+
 
 var path_visualization_enable : bool
 var path_visualization_custom_color_enable: bool
@@ -55,7 +56,7 @@ func add_unit():
 	unit.nav_agent.debug_use_custom = path_visualization_custom_color_enable
 	unit.nav_agent.debug_path_custom_color = path_visualization_color
 	unit.nav_agent.debug_path_custom_line_width = path_line_width
-	#print(get_tree().get_nodes_in_group("Units"))
+	
 func position_occupied(pos: Vector2) -> bool:
 	for p in occupied_positions:
 		if p == pos:
@@ -111,4 +112,6 @@ func delete_selected_units():
 	for unit in get_tree().get_nodes_in_group("Selected Units"):
 		if is_instance_valid(unit):
 			occupied_positions.erase(unit.position)
+			print(selection_manager)
+			selection_manager.idle_units.erase(unit)
 			unit.queue_free()
