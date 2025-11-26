@@ -144,6 +144,7 @@ _data = {
 collision_mask = 0
 input_pickable = true
 script = ExtResource("1_8omp6")
+job_limit = 2
 speed = 100
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

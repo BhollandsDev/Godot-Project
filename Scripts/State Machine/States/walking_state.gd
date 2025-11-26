@@ -13,6 +13,7 @@ extends LimboState
 
 
 func _enter() -> void:
+	#print("walking entered")
 	animation_player.play("run")
 	if selection_manager.idle_units.has(unit):
 			selection_manager.idle_units.erase(unit)

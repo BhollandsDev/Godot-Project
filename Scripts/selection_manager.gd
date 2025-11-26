@@ -34,6 +34,7 @@ var tile_selection_enable := false
 var tile_selection_enable_start := false
 var highlighted_tiles: Array = []
 var claimed_tiles := {}
+
 #var assigned_jobs := []
 var idle_units := []
 
@@ -44,24 +45,27 @@ var end_pos : Vector2
 func _ready() -> void:
 	process_priority = 1
 
-func _physics_process(delta: float) -> void:
-	##assign_jobs()
-	for tile in highlighted_tiles:
-			request_dig_job(get_closest_unit_to_job(tile, idle_units))
-	#print(highlighted_tiles)
+#func _physics_process(delta: float) -> void:
+	#if highlighted_tiles:
+		#for tile in highlighted_tiles:
+			#request_dig_job(get_closest_unit_to_job(tile, idle_units))
+	
+	
 func _draw():
 	
 	draw_grid_lines()
 	selection_draw()
+	
 	for tiles in highlighted_tiles:
 		var tile_pos = tiles * tile_size
 		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.RED, false, 2.0)
+		
 	for tiles in claimed_tiles:
 		var tile_pos = tiles * tile_size
 		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.GREEN, false, 2.0)
 		
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT: #and not mine_selection_drawing:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			if user_interface.mine_button.button_pressed:
 				tile_selection_enable_start = true
@@ -78,6 +82,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			end_pos = Vector2.ZERO
 			tile_selection_enable = false
 			tile_selection_enable_start = false
+			for tile in highlighted_tiles:
+				request_dig_job(get_closest_unit_to_job(tile, idle_units))
+			_update_tile_highlights()
 			queue_redraw()
 			
 			
@@ -90,6 +97,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		end_pos = get_global_mouse_position()
 		get_unit_selection(selection_rect_local)
 		_update_tile_highlights()
+
 		queue_redraw()
 	
 
@@ -116,8 +124,7 @@ func _update_tile_highlights():
 			highlighted_tiles = tiles
 		
 		highlighted_tiles = highlighted_tiles.filter(func(tile):
-			var world_pos = ground.map_to_local(tile)
-			return main.is_point_on_navmap(world_pos)
+			return is_tile_reachable(tile)
 		)
 		
 		
@@ -165,18 +172,6 @@ func draw_grid_lines():
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
 
-#func request_dig_job(unit) -> Vector2i:
-	#if idle_units.is_empty():
-		#return Vector2i.ZERO
-	#for tile in highlighted_tiles:
-		#if tile not in claimed_tiles:
-			#if unit.assigned_jobs.size() < unit.job_limit:
-				#unit.assigned_jobs.append(tile)
-				#claimed_tiles[tile] = unit
-				#highlighted_tiles.erase(tile)
-				#queue_redraw()
-			#return tile
-	#return Vector2i.ZERO
 func request_dig_job(unit) -> Vector2i:
 
 	if idle_units.is_empty():
@@ -192,9 +187,7 @@ func request_dig_job(unit) -> Vector2i:
 					highlighted_tiles.erase(tile)
 					queue_redraw()
 				return tile
-			#else:
-				#highlighted_tiles.erase(tile)
-				#print("cant")
+
 	return Vector2i.ZERO
 
 func get_closest_unit_to_job(tile: Vector2i, units: Array) -> Unit:
@@ -215,3 +208,5 @@ func get_closest_unit_to_job(tile: Vector2i, units: Array) -> Unit:
 			best_unit = u
 	return best_unit
 	
+func is_tile_reachable(tile: Vector2i) -> bool:
+	return ground.get_cell_source_id(tile) != -1

@@ -7,8 +7,6 @@ extends Node2D
 var start_position = Vector2.ZERO
 var end_position = Vector2.ZERO
 
-#vars for instancing Units
-#var target_scene = Unit
 var target_scene = preload("res://Scenes/unit.tscn")
 var spawn_parent: Node2D = null
 
@@ -27,7 +25,8 @@ var path_line_width : float
 
 func _ready() -> void:
 	spawn_parent = units_container
-
+	
+	
 func add_unit():
 	if not target_scene or not spawn_parent:
 		push_error("UnitManger: target_scene or spawn_parent not set")
@@ -56,7 +55,7 @@ func add_unit():
 	unit.nav_agent.debug_use_custom = path_visualization_custom_color_enable
 	unit.nav_agent.debug_path_custom_color = path_visualization_color
 	unit.nav_agent.debug_path_custom_line_width = path_line_width
-	
+
 func position_occupied(pos: Vector2) -> bool:
 	for p in occupied_positions:
 		if p == pos:

@@ -46,7 +46,7 @@ func _ready() -> void:
 	previous_position = position
 	nav_agent.avoidance_enabled = true
 	initiate_state_machine()
-	
+
 	
 func initiate_state_machine():
 	main_state_machine.add_transition(idle_state, walking_state, "move_to_target")
@@ -76,7 +76,7 @@ func _physics_process(delta: float) -> void:
 		current_tile_pos = ground.local_to_map(ground.to_local(position))
 	_on_unit_moved()
 	move_and_slide()
-	
+	#print(assigned_jobs)
 	
 	
 #func to select the unit
@@ -92,7 +92,6 @@ func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> vo
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			select_mode = true
 			for unit in get_tree().get_nodes_in_group("Units"):
-				#for unit in main.selected_units:
 				if unit != self:
 					unit.remove_from_group("Selected Units")
 					unit.deselect()
@@ -102,14 +101,10 @@ func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> vo
 
 func move_to(target_position):
 	if main.is_point_on_navmap(target_position):
-		#print(true)
 		nav_agent.target_position = target_position
 	else:
 		print("Not Reachable")
 		return
-		#print(nav_agent.is_target_reachable())
-	#print(nav_agent.is_target_reachable())
-	#nav_agent.target_position = target_position
 
 
 func animation(_delta):
