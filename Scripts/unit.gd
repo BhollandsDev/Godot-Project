@@ -46,12 +46,13 @@ func _ready() -> void:
 	previous_position = position
 	nav_agent.avoidance_enabled = true
 	initiate_state_machine()
-
+	#SignalBus.unit_idle.emit(self)
 	
 func initiate_state_machine():
 	main_state_machine.add_transition(idle_state, walking_state, "move_to_target")
 	main_state_machine.add_transition(main_state_machine.ANYSTATE, idle_state, "state_ended")
 	main_state_machine.add_transition(idle_state, digging_state, "start_digging")
+	main_state_machine.add_transition(walking_state, digging_state, "start_digging")
 	main_state_machine.initial_state = idle_state
 	main_state_machine.initialize(self)
 	main_state_machine.set_active(true)

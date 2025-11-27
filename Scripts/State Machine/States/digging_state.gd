@@ -11,17 +11,17 @@ extends LimboState
 @onready var map_generator = get_node("/root/Main/Map Generator")
 @onready var selection_manager = get_node("/root/Main/Selection Draw")
 
-func _enter() -> void:
-	#print("digging started")
-	if unit.assigned_jobs[0] == unit.current_tile_pos:
-		map_generator.perform_dig(unit.assigned_jobs[0])
-		unit.assigned_jobs.erase(unit.assigned_jobs[0])
 
+
+func _enter() -> void:
+	#print("digging")
+	var dig_complete = await JobManager.perform_dig(unit.assigned_jobs[0])
+	if dig_complete:
+		unit.assigned_jobs.erase(unit.assigned_jobs[0])
+		dispatch("state_ended")
 			
 func _update(_delta: float) -> void:
-	var timer = get_tree().create_timer(0.5)
-	await timer.timeout
-	dispatch("state_ended")
+	
 	
 	if not unit.assigned_jobs:
 		dispatch("state_ended")

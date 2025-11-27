@@ -16,7 +16,8 @@ config/features=PackedStringArray("4.5", "Forward Plus")
 
 [autoload]
 
-UnitManager="res://Scenes/unit_manager.tscn"
+SignalBus="*res://Scripts/signal_bus.gd"
+JobManager="*res://Scripts/job_manager.gd"
 
 [editor_plugins]
 

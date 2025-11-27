@@ -25,18 +25,13 @@ extends Node2D
 @export var path_visual_line_color: Color = Color.RED
 var test := true
 
-var selected_tiles: Array = []
-
 var selection_rect_local = Rect2()
 var selection_drawing : bool = false
 
 var tile_selection_enable := false
 var tile_selection_enable_start := false
-var highlighted_tiles: Array = []
-var claimed_tiles := {}
 
-#var assigned_jobs := []
-var idle_units := []
+var draw_dig_tile_selection: Array = []
 
 var start_pos : Vector2
 var end_pos : Vector2
@@ -45,10 +40,6 @@ var end_pos : Vector2
 func _ready() -> void:
 	process_priority = 1
 
-#func _physics_process(delta: float) -> void:
-	#if highlighted_tiles:
-		#for tile in highlighted_tiles:
-			#request_dig_job(get_closest_unit_to_job(tile, idle_units))
 	
 	
 func _draw():
@@ -56,11 +47,11 @@ func _draw():
 	draw_grid_lines()
 	selection_draw()
 	
-	for tiles in highlighted_tiles:
+	for tiles in draw_dig_tile_selection:
 		var tile_pos = tiles * tile_size
 		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.RED, false, 2.0)
 		
-	for tiles in claimed_tiles:
+	for tiles in JobManager.claimed_dig_jobs:
 		var tile_pos = tiles * tile_size
 		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.GREEN, false, 2.0)
 		
@@ -82,9 +73,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			end_pos = Vector2.ZERO
 			tile_selection_enable = false
 			tile_selection_enable_start = false
-			for tile in highlighted_tiles:
-				request_dig_job(get_closest_unit_to_job(tile, idle_units))
-			_update_tile_highlights()
+			_update_draw_dig_tiles()
+			JobManager.available_dig_jobs = draw_dig_tile_selection
+			JobManager._match_jobs_to_units()
 			queue_redraw()
 			
 			
@@ -96,12 +87,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and selection_drawing || tile_selection_enable_start:
 		end_pos = get_global_mouse_position()
 		get_unit_selection(selection_rect_local)
-		_update_tile_highlights()
+		_update_draw_dig_tiles()
 
 		queue_redraw()
 	
 
-func _update_tile_highlights():
+func _update_draw_dig_tiles():
 	if tile_selection_enable_start:
 		var start_local = ground.to_local(start_pos)
 		var end_local = ground.to_local(end_pos)
@@ -112,22 +103,21 @@ func _update_tile_highlights():
 		var x2 = max(start_tile.x, end_tile.x)
 		var y1 = min(start_tile.y, end_tile.y)
 		var y2 = max(start_tile.y, end_tile.y)
-		
+
 		for x in range(x1,x2 + 1):
 			for y in range(y1,y2 + 1):
 					tiles.append(Vector2i(x, y))
+					
 		if Input.is_action_pressed("ui_shift"):
 			for t in tiles:
-				if not highlighted_tiles.has(t):
-					highlighted_tiles.append(t) 
+				if not draw_dig_tile_selection.has(t):
+					draw_dig_tile_selection.append(t) 
 		else:
-			highlighted_tiles = tiles
+			draw_dig_tile_selection = tiles
 		
-		highlighted_tiles = highlighted_tiles.filter(func(tile):
-			return is_tile_reachable(tile)
-		)
-		
-		
+		draw_dig_tile_selection = draw_dig_tile_selection.filter(func(tile):
+			return map_generator.is_tile_reachable(tile))
+
 		queue_redraw()
 		
 func selection_draw() -> void:	
@@ -171,42 +161,3 @@ func draw_grid_lines():
 			draw_line(Vector2(i * (32 * 32), cam.y + size.y + 100), Vector2(i * (32 * 32), cam.y - size.y - 100), grid_line_color, (grid_line_width * 2))
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
-
-func request_dig_job(unit) -> Vector2i:
-
-	if idle_units.is_empty():
-		return Vector2i.ZERO
-	for tile in highlighted_tiles:
-		var world_pos = ground.map_to_local(tile)
-		if main.is_point_on_navmap(world_pos):
-			if tile not in claimed_tiles:
-				if unit.assigned_jobs.size() < unit.job_limit:
-					unit.assigned_jobs.append(tile)
-					claimed_tiles[tile] = unit
-					#print(claimed_tiles)
-					highlighted_tiles.erase(tile)
-					queue_redraw()
-				return tile
-
-	return Vector2i.ZERO
-
-func get_closest_unit_to_job(tile: Vector2i, units: Array) -> Unit:
-	if units.is_empty():
-		return null
-	
-	var best_unit :Unit = null
-	var best_distance := INF
-	var world_pos = ground.map_to_local(tile)
-	
-	
-		#if main.is_point_on_navmap(world_pos):
-	for u in units:
-		var dist = u.global_position.distance_to(world_pos)
-	#var dist = u.current_tile_pos
-		if dist < best_distance:
-			best_distance = dist
-			best_unit = u
-	return best_unit
-	
-func is_tile_reachable(tile: Vector2i) -> bool:
-	return ground.get_cell_source_id(tile) != -1

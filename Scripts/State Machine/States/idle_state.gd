@@ -13,27 +13,22 @@ extends LimboState
 
 
 func _enter() -> void:
-	#print("idle entered")
+	#print("idle")
+	#print(unit.assigned_jobs)
 	animation_player.play("idle")
-	selection_manager.idle_units.append(unit)
-	if not unit.assigned_jobs:
-		if selection_manager.highlighted_tiles:
-			selection_manager.request_dig_job(unit)
-
-
-
-func _update(_delta: float) -> void:
-	
-	
-	
-	if unit.assigned_jobs:
-		selection_manager.idle_units.erase(unit)
-		if unit.assigned_jobs[0] != unit.current_tile_pos:
-			unit.move_to(ground.map_to_local(unit.assigned_jobs[0]))
-		if unit.assigned_jobs[0] == unit.current_tile_pos:
-			dispatch("start_digging")
-
-	
-	if unit.velocity.x != 0 or not nav_agent.is_navigation_finished():
+	if unit.assigned_jobs.is_empty():
+		if not JobManager.idle_units.has(unit):
+			JobManager.idle_units.append(unit)
+		SignalBus.unit_idle.emit(unit)
+	else:
 		dispatch("move_to_target")
 		
+
+func _update(_delta: float) -> void:
+	if unit.assigned_jobs:
+		dispatch("move_to_target")
+
+
+func _exit() -> void:
+	if JobManager.idle_units.has(unit):
+		JobManager.idle_units.erase(unit)

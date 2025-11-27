@@ -13,15 +13,16 @@ extends LimboState
 
 
 func _enter() -> void:
-	#print("walking entered")
+	#print("walking")
 	animation_player.play("run")
-	if selection_manager.idle_units.has(unit):
-			selection_manager.idle_units.erase(unit)
-	
+	if unit.assigned_jobs:
+		var target_pos = ground.map_to_local(unit.assigned_jobs[0])
+		unit.move_to(target_pos)
 	
 
 func _update(_delta: float) -> void:
-	if unit.velocity == Vector2.ZERO:
+	if unit.assigned_jobs.is_empty():
 		dispatch("state_ended")
-
-		#print("moved finished")
+		return
+	if nav_agent.is_navigation_finished():
+		dispatch("start_digging")
