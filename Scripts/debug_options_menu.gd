@@ -78,26 +78,22 @@ func _on_title_bar_pc_gui_input(event: InputEvent) -> void:
 
 
 func _on_enable_path_visual_cb_toggled(toggled_on: bool) -> void:
-	main.path_visualization_enable = toggled_on
-	for unit in get_tree().get_nodes_in_group("Units"):
-		unit.nav_agent.debug_enabled = toggled_on
+	selection_manager.path_visual_enable = toggled_on
+	for u in get_tree().get_nodes_in_group("Units"):
+		u.queue_redraw()
 
 
 
 
 func _on_path_line_color_cpb_color_changed(color: Color) -> void:
-	main.path_visualization_enable = true
-	main.path_visualization_color = color
-	for unit in get_tree().get_nodes_in_group("Units"):
-		unit.nav_agent.debug_use_custom = true
-		unit.nav_agent.debug_path_custom_color = color
+	selection_manager.path_visual_line_color = color
+	
 		
 
 
 func _on_path_line_width_sb_value_changed(value: float) -> void:
-	main.path_line_width = value
-	for unit in get_tree().get_nodes_in_group("Units"):
-		unit.nav_agent.debug_path_custom_line_width = value
+	selection_manager.path_visual_line_width = value
+	
 	
 
 

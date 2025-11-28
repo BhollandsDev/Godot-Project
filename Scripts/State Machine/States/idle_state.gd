@@ -1,10 +1,9 @@
 extends LimboState
 
 @onready var main_state_machine: LimboHSM = $".."
-#@onready var unit: Unit = $"../.."
 @onready var unit: CharacterBody2D = $"../.."
 
-@onready var nav_agent: NavigationAgent2D = $"../../NavigationAgent2D"
+#@onready var nav_agent: NavigationAgent2D = $"../../NavigationAgent2D"
 @onready var animation_player: AnimationPlayer = $"../../AnimationPlayer"
 @onready var ground = get_node("/root/Main/Map Generator/ground")
 @onready var main = get_node("/root/Main")
@@ -13,8 +12,6 @@ extends LimboState
 
 
 func _enter() -> void:
-	#print("idle")
-	#print(unit.assigned_jobs)
 	animation_player.play("idle")
 	if unit.assigned_jobs.is_empty():
 		if not JobManager.idle_units.has(unit):

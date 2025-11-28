@@ -41,7 +41,7 @@ func _ready() -> void:
 			#available_dig_jobs.erase(tile)
 			#selection_manager.claimed_tiles = claimed_dig_jobs
 			#selection_manager.queue_redraw()
-func _assign_job_to_unit(unit: Unit):
+func _assign_job_to_unit(unit):
 	if available_dig_jobs.is_empty():
 		return
 	var best_job_index = -1
@@ -79,6 +79,9 @@ func _assign_job_to_unit(unit: Unit):
 func perform_dig(tile: Vector2i) -> bool:
 	await get_tree().create_timer(0.5).timeout
 	ground.erase_cell(tile)
+	
+	PathfindingManager.set_tile_walkable(tile, false)
+	
 	
 	if selection_manager.draw_dig_tile_selection.has(tile):
 		selection_manager.draw_dig_tile_selection.erase(tile)

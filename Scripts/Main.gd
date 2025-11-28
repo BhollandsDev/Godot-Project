@@ -3,6 +3,7 @@ extends Node2D
 
 @onready var units_container = $"Units Container"
 @onready var selection_manager := get_node("../Main/Selection Draw")
+@onready var ground = get_node("../Main/Map Generator/ground")
 
 var start_position = Vector2.ZERO
 var end_position = Vector2.ZERO
@@ -17,10 +18,10 @@ var units_per_row = 5
 var occupied_positions: Array = []
 
 
-var path_visualization_enable : bool
-var path_visualization_custom_color_enable: bool
-var path_visualization_color : Color
-var path_line_width : float 
+#var path_visualization_enable : bool
+#var path_visualization_custom_color_enable: bool
+#var path_visualization_color : Color
+#var path_line_width : float 
 
 
 func _ready() -> void:
@@ -40,8 +41,16 @@ func add_unit():
 		var col = index % units_per_row
 		
 		positions = spawn_start + Vector2(spawn_offset.x * col, spawn_offset.y * row)
-		if not position_occupied(positions):
+		
+		var is_occupied = position_occupied(positions)
+		var cell_coords = ground.local_to_map(positions)
+		var is_land = ground.get_cell_source_id(cell_coords) != -1
+		if not is_occupied and is_land:
 			break
+		
+		
+		#if not position_occupied(positions):
+			#break
 		index += 1
 	unit.position = positions 
 	spawn_parent.add_child(unit)
@@ -50,11 +59,11 @@ func add_unit():
 	if unit.has_method("set_previous_position"):
 		unit.set_previous_position(positions)
 	
-	unit.position = positions
-	unit.nav_agent.debug_enabled = path_visualization_enable
-	unit.nav_agent.debug_use_custom = path_visualization_custom_color_enable
-	unit.nav_agent.debug_path_custom_color = path_visualization_color
-	unit.nav_agent.debug_path_custom_line_width = path_line_width
+	#unit.position = positions
+	#unit.nav_agent.debug_enabled = path_visualization_enable
+	#unit.nav_agent.debug_use_custom = path_visualization_custom_color_enable
+	#unit.nav_agent.debug_path_custom_color = path_visualization_color
+	#unit.nav_agent.debug_path_custom_line_width = path_line_width
 
 func position_occupied(pos: Vector2) -> bool:
 	for p in occupied_positions:

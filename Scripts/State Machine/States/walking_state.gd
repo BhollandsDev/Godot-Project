@@ -5,7 +5,7 @@ extends LimboState
 #@onready var unit: Unit = $"../.."
 @onready var unit: CharacterBody2D = $"../.."
 
-@onready var nav_agent: NavigationAgent2D = $"../../NavigationAgent2D"
+#@onready var nav_agent: NavigationAgent2D = $"../../NavigationAgent2D"
 @onready var animation_player: AnimationPlayer = $"../../AnimationPlayer"
 @onready var ground = get_node("/root/Main/Map Generator/ground")
 @onready var main = get_node("/root/Main")
@@ -24,5 +24,7 @@ func _update(_delta: float) -> void:
 	if unit.assigned_jobs.is_empty():
 		dispatch("state_ended")
 		return
-	if nav_agent.is_navigation_finished():
+	#if nav_agent.is_navigation_finished():
+		#dispatch("start_digging")
+	if unit.current_path.is_empty():
 		dispatch("start_digging")

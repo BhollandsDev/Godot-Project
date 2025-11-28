@@ -23,6 +23,7 @@ extends Node2D
 @export var path_visual_enable : bool = false
 @export var path_visual_line_width: int = 2
 @export var path_visual_line_color: Color = Color.RED
+
 var test := true
 
 var selection_rect_local = Rect2()
@@ -43,7 +44,7 @@ func _ready() -> void:
 	
 	
 func _draw():
-	
+	#debug_path_visual()
 	draw_grid_lines()
 	selection_draw()
 	
@@ -81,7 +82,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if event.is_pressed():
-			
+			#main.move_to_position()
 			main.move_to_position(ground, get_tile_pos(get_global_mouse_position()))
 			
 	if event is InputEventMouseMotion and selection_drawing || tile_selection_enable_start:
@@ -161,3 +162,18 @@ func draw_grid_lines():
 			draw_line(Vector2(i * (32 * 32), cam.y + size.y + 100), Vector2(i * (32 * 32), cam.y - size.y - 100), grid_line_color, (grid_line_width * 2))
 		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
 			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
+
+#func debug_path_visual():
+	#if path_visual_enable:
+		#var units = get_tree().get_nodes_in_group("Units")
+		#for u in units:
+			#if u.current_path_index >= u.current_path.size():
+				#return
+			#var points = PackedVector2Array()
+			#points.append(Vector2.ZERO)
+			#
+			#for i in range(u.current_path_index, u.current_path.size()):
+				#points.append(u.to_local(u.current_path[i]))
+			#
+			#if points.size() >= 2:
+				#draw_polyline(points, path_visual_line_color, path_visual_line_width)

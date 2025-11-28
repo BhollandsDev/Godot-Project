@@ -88,7 +88,7 @@ func _generate_chunk_async(chunk_coords: Vector2i) -> void:
 	var start_y = chunk_coords.y * CHUNK_SIZE
 	var ground_cells := []
 	var cell_count := CHUNK_SIZE * CHUNK_SIZE
-	
+	var walkable_cells_batch: Array[Vector2i] #Added
 	for i in range(cell_count):
 		var x = i % CHUNK_SIZE
 		@warning_ignore("integer_division") var y = i / CHUNK_SIZE
@@ -102,7 +102,7 @@ func _generate_chunk_async(chunk_coords: Vector2i) -> void:
 		 # ground overlay
 		if noise_val >= 0.0:
 			ground_cells.append(cell)
-			
+			walkable_cells_batch.append(cell) #Added
 		# yeild every few cells to reduce stutter
 		if i % CELLS_PER_FRAME == 0:
 			await get_tree().process_frame
@@ -110,7 +110,7 @@ func _generate_chunk_async(chunk_coords: Vector2i) -> void:
 	# apply ground terrain connectivity in batches
 	await _connect_ground_cells_in_batches(ground_cells)
 	
-	#generated_chunks.erase(chunk_coords)
+	PathfindingManager.add_walkable_cells(walkable_cells_batch) #Added
 	
 func _connect_ground_cells_in_batches(cells: Array) -> void:
 	var batch_size = CELLS_PER_FRAME
@@ -124,17 +124,5 @@ func _on_unit_dig_complete(target_pos: Vector2):
 	ground_tileset.set_cell(Vector2i(cell.x, cell.y), -1)
 
 
-## erase ground tile when user request to be cleared by selection ##
-#func perform_dig(tile: Vector2i):
-	#ground_tileset.erase_cell(tile)
-	#if selection_manager.claimed_tiles.has(tile):
-		#selection_manager.claimed_tiles.erase(tile)
-		#selection_manager.queue_redraw()
-	#if selection_manager.highlighted_tiles.has(tile):
-		#selection_manager.highlighted_tiles.erase(tile)
-		#selection_manager.queue_redraw()
-		#selection_manager.highlighted_tiles.erase(tile)
-		#selection_manager.queue_redraw()
-	
 func is_tile_reachable(tile: Vector2i) -> bool:
 	return ground_tileset.get_cell_source_id(tile) != -1

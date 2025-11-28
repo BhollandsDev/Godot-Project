@@ -1,11 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://clx3f8140u1uf"]
+[gd_scene load_steps=12 format=3 uid="uid://cm756gpj22bg4"]
 
-[ext_resource type="Script" uid="uid://c68tccm4w3p5e" path="res://Scripts/unit.gd" id="1_8omp6"]
-[ext_resource type="Texture2D" uid="uid://d0yg1biiac8wl" path="res://Sprites/Unit Sprites/run.png" id="2_8omp6"]
-[ext_resource type="Texture2D" uid="uid://cagps604db8ks" path="res://Sprites/Unit Sprites/idle.png" id="3_lpvrq"]
-[ext_resource type="Script" uid="uid://cptjbsnyuoqwr" path="res://Scripts/State Machine/States/idle_state.gd" id="4_3rt3l"]
-[ext_resource type="Script" uid="uid://c7pnlrsvp40yv" path="res://Scripts/State Machine/States/walking_state.gd" id="5_bot63"]
-[ext_resource type="Script" uid="uid://bi8xq58ji7aib" path="res://Scripts/State Machine/States/digging_state.gd" id="6_bot63"]
+[ext_resource type="Script" uid="uid://c68tccm4w3p5e" path="res://Scripts/unit.gd" id="1_cuo6p"]
+[ext_resource type="Texture2D" uid="uid://d0yg1biiac8wl" path="res://Sprites/Unit Sprites/run.png" id="2_nv8r2"]
+[ext_resource type="Texture2D" uid="uid://cagps604db8ks" path="res://Sprites/Unit Sprites/idle.png" id="3_2tjti"]
+[ext_resource type="Script" uid="uid://cptjbsnyuoqwr" path="res://Scripts/State Machine/States/idle_state.gd" id="4_0yg7c"]
+[ext_resource type="Script" uid="uid://c7pnlrsvp40yv" path="res://Scripts/State Machine/States/walking_state.gd" id="5_22da4"]
+[ext_resource type="Script" uid="uid://bi8xq58ji7aib" path="res://Scripts/State Machine/States/digging_state.gd" id="6_ba3bc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_c86kq"]
 size = Vector2(12, 12)
@@ -52,7 +52,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("3_lpvrq")]
+"values": [ExtResource("3_2tjti")]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -94,7 +94,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("2_8omp6")]
+"values": [ExtResource("2_nv8r2")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -143,15 +143,21 @@ _data = {
 [node name="Unit" type="CharacterBody2D" groups=["Units"]]
 collision_mask = 0
 input_pickable = true
-script = ExtResource("1_8omp6")
+script = ExtResource("1_cuo6p")
 job_limit = 2
 speed = 100
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_8omp6")
+texture = ExtResource("2_nv8r2")
 hframes = 8
 vframes = 3
 frame = 5
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 1.0
+target_desired_distance = 1.0
+path_search_max_polygons = 0
+avoidance_enabled = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_c86kq")
@@ -164,12 +170,12 @@ libraries = {
 [node name="Main State Machine" type="LimboHSM" parent="."]
 
 [node name="Idle State" type="LimboState" parent="Main State Machine"]
-script = ExtResource("4_3rt3l")
+script = ExtResource("4_0yg7c")
 
 [node name="Walking State" type="LimboState" parent="Main State Machine"]
-script = ExtResource("5_bot63")
+script = ExtResource("5_22da4")
 
 [node name="Digging State" type="LimboState" parent="Main State Machine"]
-script = ExtResource("6_bot63")
+script = ExtResource("6_ba3bc")
 
 [connection signal="input_event" from="." to="." method="_on_input_event"]

@@ -1,9 +1,9 @@
 extends CharacterBody2D
 
-#class_name Unit
+class_name Unit
 
 @onready var main = $"../../../Main"
-#@onready var nav_agent = $NavigationAgent2D
+@onready var nav_agent = $NavigationAgent2D
 @onready var animation_player = $AnimationPlayer
 @onready var map_generator = get_node("../../Map Generator")
 @onready var idle_state: LimboState = $"Main State Machine/Idle State"
@@ -13,12 +13,10 @@ extends CharacterBody2D
 @onready var main_state_machine: LimboHSM = $"Main State Machine"
 @onready var ground = get_node("../../Map Generator/ground")
 @onready var selection_manager = get_node("../../Selection Draw")
-#var test := false
+var test := false
 var assigned_jobs := []
 @export var job_limit : int = 1
 
-var current_path: PackedVector2Array
-var current_path_index: int = 0
 
 #set speed
 @export var speed : int
@@ -28,7 +26,7 @@ var selection_rect : Rect2
 var selection_width : int
 var previous_position: Vector2
 var current_tile_pos : Vector2i
-#var current_job: Vector2i = Vector2i.ZERO
+var current_job: Vector2i = Vector2i.ZERO
 
 
 var select_mode : bool = false:
@@ -45,8 +43,8 @@ var select_mode : bool = false:
 		
 #setting the name to Unit
 func _ready() -> void:
-	#previous_position = position
-	#nav_agent.avoidance_enabled = true
+	previous_position = position
+	nav_agent.avoidance_enabled = true
 	initiate_state_machine()
 	#SignalBus.unit_idle.emit(self)
 	
@@ -66,14 +64,19 @@ func set_previous_position(pos: Vector2):
 
 func _draw():
 	draw_rect(selection_rect, Color.GREEN, false, selection_width)
-	_debug_draw_path_visual()
 
-func _physics_process(_delta: float) -> void:
-	#print(current_path)
-	_path_movement()
+#get the next position through Navigation Agent
+func _physics_process(delta: float) -> void:
+	animation(delta)
+	var next_position = nav_agent.get_next_path_position()
+	var direction = (next_position - global_position).normalized()
+	velocity = round(direction * speed)
+	###return if navigation is finished
+	if nav_agent.is_navigation_finished():
+		velocity = Vector2.ZERO
+		current_tile_pos = ground.local_to_map(ground.to_local(position))
 	_on_unit_moved()
 	move_and_slide()
-
 
 
 #func to select the unit
@@ -94,12 +97,16 @@ func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> vo
 					unit.deselect()
 				self.add_to_group("Selected Units")
 
+
+
 func move_to(target_position):
-	#request path from pathmanager
-	
-	current_path = PathfindingManager.get_path_route(global_position, target_position)
-	current_path_index = 0
-	
+	if main.is_point_on_navmap(target_position):
+		nav_agent.target_position = target_position
+	else:
+		print("Not Reachable")
+		return
+
+
 func animation(_delta):
 	if velocity.length() > 0:
 		#print(velocity)
@@ -107,60 +114,7 @@ func animation(_delta):
 			$Sprite2D.flip_h = true
 		elif velocity.x > 0:
 			$Sprite2D.flip_h = false
-#Updates occupied positons so they dont spawn ontop of eachother
+#
 func _on_unit_moved():
 	main.update_unit_position(previous_position, position)
 	previous_position = position
-
-func _path_movement():
-	var desired_velocity := Vector2.ZERO
-	# Only runs if path existis
-	if not current_path.is_empty():
-		if current_path_index >= current_path.size():
-			current_path = PackedVector2Array()
-		else:
-			
-			var target_point = current_path[current_path_index]
-			if global_position.distance_to(target_point) < 16.0:
-				current_path_index +=1
-				if current_path_index >= current_path.size():
-					current_path = PackedVector2Array()
-					current_tile_pos = ground.local_to_map(position)
-				else:
-					target_point = current_path[current_path_index]
-			if not current_path.is_empty():
-				desired_velocity = (target_point - global_position).normalized() * speed
-				
-	var seperation := Vector2.ZERO
-	var nearby_units = get_tree().get_nodes_in_group("Selected Units")
-	
-	for other in nearby_units:
-		if other == self: continue
-		var dist = global_position.distance_to(other.global_position)
-		if dist < 25.0:
-			if dist < 0.1: dist = 0.1
-			var push_dir = (global_position - other.global_position).normalized()
-			seperation += push_dir * (1.0 - dist / 25.0)
-	
-	var seperation_force = seperation * 200.0
-	if seperation_force.length() > speed * 0.8:
-		seperation_force = seperation_force.limit_length(speed * 0.8)
-	
-	velocity = desired_velocity + (seperation * 300.0)
-	if selection_manager.path_visual_enable:
-		queue_redraw()
-		
-func _debug_draw_path_visual():
-	if selection_manager.path_visual_enable and not current_path.is_empty():
-		if current_path_index >= current_path.size():
-			return
-		
-		var points = PackedVector2Array()
-		points.append(Vector2.ZERO)
-		
-		for i in range(current_path_index, current_path.size()):
-			points.append(to_local(current_path[i]))
-		
-		if points.size() >= 2:
-			draw_polyline(points, selection_manager.path_visual_line_color, selection_manager.path_visual_line_width)
-		
