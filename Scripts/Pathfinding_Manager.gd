@@ -5,7 +5,8 @@ var astar  := AStar2D.new()
 # Mapping between Vector2i (Grid Coords) and Astar ID (int)
 var tile_to_id: Dictionary = {}
 var next_id := 0
-
+const TILE_SIZE = Vector2(32, 32)
+const HALF_TILE = Vector2(16, 16)
 # Standard Neighbor offsets (Cardinal Direction + Diagnals)
 const NEIGHBORS := [
 	Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1 ,0), Vector2i(1, 0),
@@ -30,7 +31,9 @@ func add_walkable_cells(cells: Array[Vector2i]):
 		tile_to_id[cell] = id
 		
 		# Add to astar graph (world position = cell * tilesize)
-		astar.add_point(id, Vector2(cell) * 32)
+		var center_pos = (Vector2(cell) * TILE_SIZE) + HALF_TILE
+		astar.add_point(id, center_pos)
+		#astar.add_point(id, Vector2(cell) * 32)
 		#connect existing neighbors
 		_connect_to_neighbors(cell, id)
 		
@@ -42,8 +45,8 @@ func _connect_to_neighbors(cell: Vector2i, id: int):
 		if tile_to_id.has(neighbor_cell):
 			var neighbor_id = tile_to_id[neighbor_cell]
 			if offset.x != 0 and offset.y != 0:
-				if not _is_walkable(cell + Vector2i(offset.x, 0)) or \
-				not _is_walkable(cell + Vector2i(0, offset.y)):
+				if not is_walkable(cell + Vector2i(offset.x, 0)) or \
+				not is_walkable(cell + Vector2i(0, offset.y)):
 					continue
 			
 			# bidirectional connection
@@ -61,13 +64,14 @@ func set_tile_walkable(cell: Vector2i, walkable: bool):
 	#toggle the point 'disabled' means it acts like a wall.
 	astar.set_point_disabled(id, not walkable)
 	
+	SignalBus.map_changed.emit(cell)
 # --------------------------------------------------------
 #              UNIT PATHFINDING
 # --------------------------------------------------------
 
 func get_path_route(start_world: Vector2, end_world: Vector2) -> PackedVector2Array:
-	var start_cell = Vector2i(start_world / 32.0)
-	var end_cell = Vector2i(end_world / 32.0)
+	var start_cell = Vector2i(floor(start_world.x / TILE_SIZE.x),floor(start_world.y / TILE_SIZE.y)) 
+	var end_cell = Vector2i(floor(end_world.x / TILE_SIZE.x), floor(end_world.y / TILE_SIZE.y))
 	
 	if not tile_to_id.has(start_cell) or not tile_to_id.has(end_cell):
 		return PackedVector2Array() #one of the points is invalid/ unload
@@ -77,5 +81,5 @@ func get_path_route(start_world: Vector2, end_world: Vector2) -> PackedVector2Ar
 	
 	return astar.get_point_path(start_id, end_id)
 
-func _is_walkable(cell: Vector2i) -> bool:
+func is_walkable(cell: Vector2i) -> bool:
 	return tile_to_id.has(cell) and not astar.is_point_disabled(tile_to_id[cell])

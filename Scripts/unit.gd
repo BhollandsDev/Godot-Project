@@ -19,7 +19,7 @@ var assigned_jobs := []
 
 var current_path: PackedVector2Array
 var current_path_index: int = 0
-
+var final_target_pos: Vector2
 #set speed
 @export var speed : int
 
@@ -45,10 +45,11 @@ var select_mode : bool = false:
 		
 #setting the name to Unit
 func _ready() -> void:
-	#previous_position = position
-	#nav_agent.avoidance_enabled = true
 	initiate_state_machine()
-	#SignalBus.unit_idle.emit(self)
+	SignalBus.unit_idle.emit(self)
+	SignalBus.map_changed.connect(_on_map_changed)
+	#PathfindingManager.map_changed.connect(_on_map_changed)
+	
 	
 func initiate_state_machine():
 	main_state_machine.add_transition(idle_state, walking_state, "move_to_target")
@@ -96,7 +97,12 @@ func _on_input_event(_viewport : Node, event: InputEvent, _shape_idx: int) -> vo
 
 func move_to(target_position):
 	#request path from pathmanager
-	
+	final_target_pos = target_position
+	var new_path = PathfindingManager.get_path_route(global_position, target_position)
+	if new_path.is_empty():
+		velocity = Vector2.ZERO
+		current_path = PackedVector2Array()
+		return
 	current_path = PathfindingManager.get_path_route(global_position, target_position)
 	current_path_index = 0
 	
@@ -121,7 +127,7 @@ func _path_movement():
 		else:
 			
 			var target_point = current_path[current_path_index]
-			if global_position.distance_to(target_point) < 16.0:
+			if global_position.distance_to(target_point) < 6.0:
 				current_path_index +=1
 				if current_path_index >= current_path.size():
 					current_path = PackedVector2Array()
@@ -132,7 +138,7 @@ func _path_movement():
 				desired_velocity = (target_point - global_position).normalized() * speed
 				
 	var seperation := Vector2.ZERO
-	var nearby_units = get_tree().get_nodes_in_group("Selected Units")
+	var nearby_units = get_tree().get_nodes_in_group("Units")
 	
 	for other in nearby_units:
 		if other == self: continue
@@ -146,7 +152,7 @@ func _path_movement():
 	if seperation_force.length() > speed * 0.8:
 		seperation_force = seperation_force.limit_length(speed * 0.8)
 	
-	velocity = desired_velocity + (seperation * 300.0)
+	velocity = desired_velocity + (seperation * 200.0)
 	if selection_manager.path_visual_enable:
 		queue_redraw()
 		
@@ -164,3 +170,58 @@ func _debug_draw_path_visual():
 		if points.size() >= 2:
 			draw_polyline(points, selection_manager.path_visual_line_color, selection_manager.path_visual_line_width)
 		
+func _on_map_changed(bad_cell: Vector2i):
+	var my_cell = ground.local_to_map(global_position)
+	if my_cell == bad_cell:
+		print("EMERGENCY: Ground destroyed under unit!! Jumping to saftey.")
+		_emergency_escape(my_cell)
+	
+	if current_path.is_empty():
+		return
+	
+	var path_affected = false
+	
+	for i in range(current_path_index, current_path.size()):
+		var point_in_world = current_path[i]
+		var point_in_grid = ground.local_to_map(to_local(point_in_world))
+		if point_in_grid == bad_cell:
+			path_affected = true
+			break
+	
+	if path_affected:
+		move_to(final_target_pos)
+		
+func move_to_job(job_tile: Vector2i):
+	#var job_tile = assigned_jobs[0]
+	var valid_neigbors = []
+	for offset in PathfindingManager.NEIGHBORS:
+		var neighbor = job_tile + offset
+		if PathfindingManager.is_walkable(neighbor):
+			valid_neigbors.append(neighbor)
+			
+	if valid_neigbors.is_empty():
+		print("Job is unreachable")
+		main_state_machine.dispatch("state_ended")
+		return
+	
+	var best_spot = valid_neigbors[0]
+	var min_dist = global_position.distance_squared_to(ground.map_to_local(best_spot))
+	
+	for spot in valid_neigbors:
+		var d = global_position.distance_squared_to(ground.map_to_local(spot))
+		if d < min_dist:
+			min_dist = d
+			best_spot = spot
+	move_to(ground.map_to_local(best_spot))
+
+func _emergency_escape(current_water_cell: Vector2i):
+	for offset in PathfindingManager.NEIGHBORS:
+		var neighbor = current_water_cell + offset
+		if PathfindingManager.is_walkable(neighbor):
+			global_position = ground.map_to_local(neighbor)
+			velocity = Vector2.ZERO
+			current_path = PackedVector2Array()
+			
+			main_state_machine.dispatch("state_ended")
+			return
+	print("Unit is Stranded")

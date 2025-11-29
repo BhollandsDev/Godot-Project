@@ -33,14 +33,6 @@ func _ready() -> void:
 	#print(idle_units)
 	#print(unit.assigned_jobs)
 
-#func _assign_job_to_unit(unit):
-	#for tile in available_dig_jobs:
-		#if unit.assigned_jobs.size() < unit.job_limit:
-			#unit.assigned_jobs.append(tile)
-			#claimed_dig_jobs[tile] = unit
-			#available_dig_jobs.erase(tile)
-			#selection_manager.claimed_tiles = claimed_dig_jobs
-			#selection_manager.queue_redraw()
 func _assign_job_to_unit(unit):
 	if available_dig_jobs.is_empty():
 		return
@@ -62,22 +54,16 @@ func _assign_job_to_unit(unit):
 	#selection_manager.claimed_tiles = claimed_dig_jobs
 	selection_manager.queue_redraw()
 
-			
-#func get_closest_unit_to_job(tile: Vector2i, units: Array) -> Unit:
-	#if units.is_empty():
-		#return null
-	#var best_unit :Unit = null
-	#var best_distance := INF
-	#var world_pos = ground.map_to_local(tile)
-	#for u in units:
-		#var dist = u.global_position.distance_to(world_pos)
-		#if dist < best_distance:
-			#best_distance = dist
-			#best_unit = u
-	#return best_unit
 
 func perform_dig(tile: Vector2i) -> bool:
 	await get_tree().create_timer(0.5).timeout
+	for unit in get_tree().get_nodes_in_group("Units"):
+		var unit_cell = ground.local_to_map(unit.global_position)
+		if unit_cell == tile:
+			unit.assigned_jobs.erase(unit.assigned_jobs[0])
+			print("Dig Aborted: Unit is standing on the target")
+			return false
+
 	ground.erase_cell(tile)
 	
 	PathfindingManager.set_tile_walkable(tile, false)
