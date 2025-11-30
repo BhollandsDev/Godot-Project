@@ -76,6 +76,7 @@ func move_to_position(layer : TileMapLayer, tile_pos):
 	var formation = get_formation(tile_pos)
 	for i in range(selected_units.size()):
 		selected_units[i].move_to(layer.map_to_local(formation[i]))
+		selected_units[i].main_state_machine.dispatch("move_to_target")
 		
 func get_formation(tile_pos):
 	var selected_units = selected_units_group(get_tree().get_nodes_in_group("Selected Units"))
@@ -112,7 +113,7 @@ func delete_selected_units():
 			selection_manager.idle_units.erase(unit)
 			unit.queue_free()
 
-func is_point_on_navmap(point: Vector2, max_distance: float = 6.0) -> bool:
-	var map_rid: RID = get_world_2d().get_navigation_map()
-	var closest: Vector2 = NavigationServer2D.map_get_closest_point(map_rid, point)
-	return closest.distance_to(point) <= max_distance
+#func is_point_on_navmap(point: Vector2, max_distance: float = 6.0) -> bool:
+	#var map_rid: RID = get_world_2d().get_navigation_map()
+	#var closest: Vector2 = NavigationServer2D.map_get_closest_point(map_rid, point)
+	#return closest.distance_to(point) <= max_distance

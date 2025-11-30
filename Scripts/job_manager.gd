@@ -60,7 +60,6 @@ func perform_dig(tile: Vector2i) -> bool:
 	for unit in get_tree().get_nodes_in_group("Units"):
 		var unit_cell = ground.local_to_map(unit.global_position)
 		if unit_cell == tile:
-			unit.assigned_jobs.erase(unit.assigned_jobs[0])
 			print("Dig Aborted: Unit is standing on the target")
 			return false
 
@@ -79,6 +78,7 @@ func perform_dig(tile: Vector2i) -> bool:
 	return true
 
 func _match_jobs_to_units():
+	
 	for i in range(idle_units.size() -1, -1, -1):
 		if available_dig_jobs.is_empty():
 			break

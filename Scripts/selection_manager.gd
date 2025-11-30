@@ -48,6 +48,10 @@ func _draw():
 	draw_grid_lines()
 	selection_draw()
 	
+	for tile in PathfindingManager.NEIGHBORS:
+		var tile_pos = tile * tile_size
+		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.YELLOW, false, 2.0)
+	
 	for tiles in draw_dig_tile_selection:
 		var tile_pos = tiles * tile_size
 		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.RED, false, 2.0)

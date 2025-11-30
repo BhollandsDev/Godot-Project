@@ -11,7 +11,7 @@ extends LimboState
 @onready var map_generator = get_node("/root/Main/Map Generator")
 @onready var selection_manager = get_node("/root/Main/Selection Draw")
 
-
+var fail_counter : int = 0
 
 func _enter() -> void:
 	distance_check_to_job()
@@ -37,10 +37,36 @@ func distance_check_to_job():
 		dispatch("move_to_target")
 		return
 	
-	
-	
+
+
 	var dig_complete = await  JobManager.perform_dig(job_tile)
+	if dig_complete == false and fail_counter < 3:
+		unit.assigned_jobs.erase(job_tile)
+		JobManager.claimed_dig_jobs.erase(job_tile)
+		JobManager.available_dig_jobs.append(job_tile)
+		#print("claimed, ",JobManager.claimed_dig_jobs)
+		#print("available, ", JobManager.available_dig_jobs)
+		fail_counter += 1
+		selection_manager.queue_redraw()
+		print(fail_counter)
+	elif dig_complete == false and fail_counter >= 3:
+		JobManager.claimed_dig_jobs.erase(job_tile)
+		unit.assigned_jobs.erase(job_tile)
+		selection_manager.queue_redraw()
+		print("Job aborted")
+		#print("assigned jobs, ",unit.assigned_jobs)
+		#print("claimed, ",JobManager.claimed_dig_jobs)
+		#print("available, ", JobManager.available_dig_jobs)
+		fail_counter = 0
+		#print(fail_counter)
+		dispatch("state_ended")
+		
 	if dig_complete and is_active():
 		if not unit.assigned_jobs.is_empty():
 			unit.assigned_jobs.erase(job_tile)
 		dispatch("state_ended")
+
+	
+
+	
+	

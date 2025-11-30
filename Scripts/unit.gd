@@ -74,8 +74,10 @@ func _physics_process(_delta: float) -> void:
 	_path_movement()
 	_on_unit_moved()
 	move_and_slide()
-
-
+	#animation(_delta)
+	#print(velocity)
+	#if assigned_jobs:
+		#print(assigned_jobs)
 
 #func to select the unit
 func select():
@@ -106,19 +108,22 @@ func move_to(target_position):
 	current_path = PathfindingManager.get_path_route(global_position, target_position)
 	current_path_index = 0
 	
-func animation(_delta):
+func animation():
+	#print(velocity)
 	if velocity.length() > 0:
-		#print(velocity)
+		
 		if velocity.x < 0:
 			$Sprite2D.flip_h = true
 		elif velocity.x > 0:
 			$Sprite2D.flip_h = false
+
 #Updates occupied positons so they dont spawn ontop of eachother
 func _on_unit_moved():
 	main.update_unit_position(previous_position, position)
 	previous_position = position
 
 func _path_movement():
+	animation()
 	var desired_velocity := Vector2.ZERO
 	# Only runs if path existis
 	if not current_path.is_empty():
@@ -171,6 +176,7 @@ func _debug_draw_path_visual():
 			draw_polyline(points, selection_manager.path_visual_line_color, selection_manager.path_visual_line_width)
 		
 func _on_map_changed(bad_cell: Vector2i):
+	#print("Maped Changed")
 	var my_cell = ground.local_to_map(global_position)
 	if my_cell == bad_cell:
 		print("EMERGENCY: Ground destroyed under unit!! Jumping to saftey.")

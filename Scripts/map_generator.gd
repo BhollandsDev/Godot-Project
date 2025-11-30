@@ -84,6 +84,7 @@ func _process(_delta: float) -> void:
 	
 	
 func _generate_chunk_async(chunk_coords: Vector2i) -> void:
+	
 	var start_x = chunk_coords.x * CHUNK_SIZE
 	var start_y = chunk_coords.y * CHUNK_SIZE
 	var ground_cells := []
@@ -96,7 +97,7 @@ func _generate_chunk_async(chunk_coords: Vector2i) -> void:
 		var world_y = start_y + y
 		var cell := Vector2i(world_x, world_y)
 		var noise_val: float = noise.get_noise_2d(world_x, world_y)
-		
+		#print(noise_val)
 		# base water layer
 		water_tileset.set_cell(cell, source_id, water_tiles.pick_random())
 		 # ground overlay

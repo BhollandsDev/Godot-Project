@@ -16,13 +16,14 @@ func _enter() -> void:
 	#print("walking")
 	animation_player.play("run")
 	if unit.assigned_jobs:
-		#var target_pos = ground.map_to_local(unit.assigned_jobs[0])
-		#unit.move_to(target_pos)
 		unit.move_to_job(unit.assigned_jobs[0])
 
 func _update(_delta: float) -> void:
-	if unit.assigned_jobs.is_empty():
-		dispatch("state_ended")
-		return
+	
+		
 	if unit.current_path.is_empty():
-		dispatch("start_digging")
+		if unit.assigned_jobs.is_empty():
+			dispatch("state_ended")
+		
+		if not unit.assigned_jobs.is_empty():
+			dispatch("start_digging")

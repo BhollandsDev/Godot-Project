@@ -12,6 +12,7 @@ extends LimboState
 
 
 func _enter() -> void:
+	#print("idle")
 	animation_player.play("idle")
 	if unit.assigned_jobs.is_empty():
 		if not JobManager.idle_units.has(unit):
