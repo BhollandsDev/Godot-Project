@@ -22,7 +22,7 @@ PathfindingManager="*res://Scripts/Pathfinding_Manager.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [global_group]
 

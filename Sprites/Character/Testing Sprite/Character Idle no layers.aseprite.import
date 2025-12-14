@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://drgi6n1eor2tc"
+path="res://.godot/imported/Character Idle no layers.aseprite-432ee828efd4982704cf908bcdc4417d.res"
+
+[deps]
+
+source_file="res://Sprites/Character/Testing Sprite/Character Idle no layers.aseprite"
+dest_files=["res://.godot/imported/Character Idle no layers.aseprite-432ee828efd4982704cf908bcdc4417d.res"]
+
+[params]
+

@@ -6,9 +6,9 @@ extends Node2D
 @onready var water = get_node("../Map Generator/water")
 @onready var ground = get_node("../Map Generator/ground")
 @onready var units_container := get_tree().get_first_node_in_group("UnitsContainer")
-@onready var camera := get_tree().get_nodes_in_group("MainCamera")
+#@onready var camera := get_tree().get_nodes_in_group("MainCamera")
 @onready var user_interface := $"../User Interface/UI"
-@onready var tile_size : int = map_generator.TILE_SIZE_SETTER
+#@onready var tile_size : int = map_generator.TILE_SIZE_SETTER
 
 @export var selection_min_rect_size := 10
 @export var selection_rect_width := 3
@@ -44,22 +44,9 @@ func _ready() -> void:
 	
 	
 func _draw():
-	#debug_path_visual()
 	draw_grid_lines()
 	selection_draw()
-	
-	for tile in PathfindingManager.NEIGHBORS:
-		var tile_pos = tile * tile_size
-		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.YELLOW, false, 2.0)
-	
-	for tiles in draw_dig_tile_selection:
-		var tile_pos = tiles * tile_size
-		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.RED, false, 2.0)
-		
-	for tiles in JobManager.claimed_dig_jobs:
-		var tile_pos = tiles * tile_size
-		draw_rect(Rect2(tile_pos,Vector2(32, 32)),Color.GREEN, false, 2.0)
-		
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
@@ -80,13 +67,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			tile_selection_enable_start = false
 			_update_draw_dig_tiles()
 			JobManager.available_dig_jobs = draw_dig_tile_selection
-			JobManager._match_jobs_to_units()
+	
 			queue_redraw()
 			
 			
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if event.is_pressed():
-			#main.move_to_position()
+
 			main.move_to_position(ground, get_tile_pos(get_global_mouse_position()))
 			
 	if event is InputEventMouseMotion and selection_drawing || tile_selection_enable_start:
@@ -151,33 +138,41 @@ func get_unit_selection(converted_rect):
 		return converted_rect
 
 func draw_grid_lines():
-	var size = get_viewport_rect().size
-	var cam = get_viewport().get_camera_2d().position
-	### Tile Outlines ###
-	if grid_line_enable:
-		for i in range(int((cam.x - size.x) / 32) - 1, int((size.x + cam.x) / 32) + 1):
-			draw_line(Vector2(i * 32, cam.y + size.y + 100), Vector2(i * 32, cam.y - size.y - 100), grid_line_color, grid_line_width)
-		for i in range(int((cam.y - size.y) / 32) - 1, int((size.y + cam.y) / 32) + 1):
-			draw_line(Vector2(cam.x + size.x + 100, i * 32), Vector2(cam.x - size.x - 100, i * 32), grid_line_color, grid_line_width)
+	var camera = get_viewport().get_camera_2d()
+	if not camera:
+		return
 	
-	### Chunk Outlines ###
+	var viewport_size = get_viewport_rect().size
+	var zoom = camera.zoom
+	var cam = camera.position
+	var visible_size = viewport_size / zoom
+	var half_size = (visible_size / 2) + Vector2(2000, 2000)
+	var start_x = int((cam.x - half_size.x) / 32)
+	var end_x = int((cam.x + half_size.x) / 32)
+	var start_y = int((cam.y - half_size.y) / 32)
+	var end_y = int((cam.y + half_size.y) / 32)
+	
 	if grid_line_enable:
-		for i in range(int((cam.x - size.x) / (32 * 32)) - 1, int((size.x + cam.x) / (32 * 32)) + 1):
-			draw_line(Vector2(i * (32 * 32), cam.y + size.y + 100), Vector2(i * (32 * 32), cam.y - size.y - 100), grid_line_color, (grid_line_width * 2))
-		for i in range(int((cam.y - size.y) / (32 * 32)) - 1, int((size.y + cam.y) / (32 * 32)) + 1):
-			draw_line(Vector2(cam.x + size.x + 100, i * (32 * 32)), Vector2(cam.x - size.x - 100, i * (32 * 32)), grid_line_color, (grid_line_width * 2))
-
-#func debug_path_visual():
-	#if path_visual_enable:
-		#var units = get_tree().get_nodes_in_group("Units")
-		#for u in units:
-			#if u.current_path_index >= u.current_path.size():
-				#return
-			#var points = PackedVector2Array()
-			#points.append(Vector2.ZERO)
-			#
-			#for i in range(u.current_path_index, u.current_path.size()):
-				#points.append(u.to_local(u.current_path[i]))
-			#
-			#if points.size() >= 2:
-				#draw_polyline(points, path_visual_line_color, path_visual_line_width)
+		for i in range(start_x, end_x + 1):
+			var x_pos = i * 32
+			draw_line(Vector2(x_pos, cam.y - half_size.y), Vector2(x_pos, cam.y + half_size.y), grid_line_color, grid_line_width )
+		
+		for i in range(start_y, end_y + 1):
+			var y_pos = i * 32
+			draw_line(Vector2(cam.x - half_size.x, y_pos), Vector2(cam.x + half_size.x, y_pos), grid_line_color, grid_line_width)
+	
+	if grid_line_enable:
+		var chunk_size = 32 * 32
+		var chunk_start_x = int((cam.x - half_size.x) / chunk_size)
+		var chunk_end_x = int((cam.x + half_size.x) / chunk_size)
+		var chunk_start_y = int((cam.y - half_size.y) / chunk_size)
+		var chunk_end_y = int((cam.y + half_size.y) / chunk_size)
+		
+		for i in range(chunk_start_x, chunk_end_x + 1):
+			var x_pos = i * chunk_size
+			draw_line(Vector2(x_pos, cam.y - half_size.y), Vector2(x_pos, cam.y + half_size.y), grid_line_color, grid_line_width * 5)
+			
+		for i in range(chunk_start_y, chunk_end_y + 1):
+			var y_pos = i * chunk_size
+			draw_line(Vector2(cam.x - half_size.x, y_pos), Vector2(cam.x + half_size.x, y_pos), grid_line_color, grid_line_width * 5)
+	

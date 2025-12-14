@@ -7,21 +7,12 @@ extends Node2D
 
 var start_position = Vector2.ZERO
 var end_position = Vector2.ZERO
-
 var target_scene = preload("res://Scenes/unit.tscn")
 var spawn_parent: Node2D = null
-
 var spawn_start = Vector2(80, 80)
 var spawn_offset = Vector2(20, 20)
-
 var units_per_row = 5
 var occupied_positions: Array = []
-
-
-#var path_visualization_enable : bool
-#var path_visualization_custom_color_enable: bool
-#var path_visualization_color : Color
-#var path_line_width : float 
 
 
 func _ready() -> void:
@@ -48,9 +39,7 @@ func add_unit():
 		if not is_occupied and is_land:
 			break
 		
-		
-		#if not position_occupied(positions):
-			#break
+	
 		index += 1
 	unit.position = positions 
 	spawn_parent.add_child(unit)
@@ -59,11 +48,6 @@ func add_unit():
 	if unit.has_method("set_previous_position"):
 		unit.set_previous_position(positions)
 	
-	#unit.position = positions
-	#unit.nav_agent.debug_enabled = path_visualization_enable
-	#unit.nav_agent.debug_use_custom = path_visualization_custom_color_enable
-	#unit.nav_agent.debug_path_custom_color = path_visualization_color
-	#unit.nav_agent.debug_path_custom_line_width = path_line_width
 
 func position_occupied(pos: Vector2) -> bool:
 	for p in occupied_positions:
@@ -108,12 +92,8 @@ func update_unit_position(old_pos: Vector2, new_pos: Vector2):
 func delete_selected_units():
 	for unit in get_tree().get_nodes_in_group("Selected Units"):
 		if is_instance_valid(unit):
+			#print(true)
 			occupied_positions.erase(unit.position)
-			print(selection_manager)
-			selection_manager.idle_units.erase(unit)
+			#print(selection_manager)
+			JobManager.idle_units.erase(unit)
 			unit.queue_free()
-
-#func is_point_on_navmap(point: Vector2, max_distance: float = 6.0) -> bool:
-	#var map_rid: RID = get_world_2d().get_navigation_map()
-	#var closest: Vector2 = NavigationServer2D.map_get_closest_point(map_rid, point)
-	#return closest.distance_to(point) <= max_distance

@@ -1,11 +1,139 @@
-[gd_scene load_steps=4 format=3 uid="uid://k7450nbtqvyt"]
+[gd_scene load_steps=7 format=3 uid="uid://k7450nbtqvyt"]
 
 [ext_resource type="Theme" uid="uid://1kvf5d57o7fj" path="res://Themes/testing_scene.tres" id="1_5crhr"]
-[ext_resource type="Script" uid="uid://b1ui0k62h4m16" path="res://Scripts/debug_options_menu.gd" id="2_n0mag"]
+[ext_resource type="Script" uid="uid://df6q4i4d76fye" path="res://Scripts/Menu Scripts/option_selection.gd" id="2_2rnyg"]
+[ext_resource type="Script" uid="uid://b1ui0k62h4m16" path="res://Scripts/Menu Scripts/debug_options_menu.gd" id="2_n0mag"]
+[ext_resource type="Script" uid="uid://cnqhirt3rqsfo" path="res://Scripts/Menu Scripts/graphics.gd" id="3_2rnyg"]
 
 [sub_resource type="Theme" id="Theme_oq1i5"]
 
+[sub_resource type="Theme" id="Theme_5crhr"]
+
 [node name="In Game Menu" type="CanvasLayer"]
+visible = false
+
+[node name="Option Selection" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -200.0
+offset_right = 175.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("1_5crhr")
+script = ExtResource("2_2rnyg")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Option Selection"]
+layout_mode = 2
+
+[node name="TB Option Selection" type="PanelContainer" parent="Option Selection/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 0
+theme = SubResource("Theme_oq1i5")
+theme_type_variation = &"PanelContainer_TitleBar"
+
+[node name="Title Bar label" type="Label" parent="Option Selection/VBoxContainer2/TB Option Selection"]
+layout_mode = 2
+size_flags_horizontal = 6
+text = "Options"
+
+[node name="Close Button" type="Button" parent="Option Selection/VBoxContainer2/TB Option Selection"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+focus_mode = 1
+focus_behavior_recursive = 1
+action_mode = 0
+text = "X"
+
+[node name="HSeparator" type="HSeparator" parent="Option Selection/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 26
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Option Selection/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="Graphics Button" type="Button" parent="Option Selection/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Graphics Settings"
+
+[node name="Debug Options Button" type="Button" parent="Option Selection/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Debug Options"
+
+[node name="Button3" type="Button" parent="Option Selection/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Unused"
+
+[node name="Graphics" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -200.0
+offset_right = 175.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("1_5crhr")
+script = ExtResource("3_2rnyg")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Graphics"]
+layout_mode = 2
+
+[node name="TB Graphic Options" type="PanelContainer" parent="Graphics/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme = SubResource("Theme_oq1i5")
+theme_type_variation = &"PanelContainer_TitleBar"
+
+[node name="Title Bar label" type="Label" parent="Graphics/VBoxContainer/TB Graphic Options"]
+layout_mode = 2
+size_flags_horizontal = 6
+text = "Graphic Options"
+
+[node name="Close Button" type="Button" parent="Graphics/VBoxContainer/TB Graphic Options"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+focus_mode = 1
+focus_behavior_recursive = 1
+action_mode = 0
+text = "X"
+
+[node name="HSeparator" type="HSeparator" parent="Graphics/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="GridContainer" type="GridContainer" parent="Graphics/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 0
+theme_override_constants/h_separation = 25
+columns = 2
+
+[node name="Fullscreen CB Label" type="Label" parent="Graphics/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "FullScreen"
+
+[node name="Fullscreen CB" type="CheckBox" parent="Graphics/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
 [node name="Debug Options Menu" type="PanelContainer" parent="."]
 visible = false
@@ -14,12 +142,14 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -178.0
-offset_top = -201.0
-offset_right = 178.0
-offset_bottom = 201.0
+offset_left = -175.0
+offset_top = -200.0
+offset_right = 174.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 mouse_force_pass_scroll_events = false
 theme = ExtResource("1_5crhr")
 script = ExtResource("2_n0mag")
@@ -28,18 +158,18 @@ script = ExtResource("2_n0mag")
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Title Bar PC" type="PanelContainer" parent="Debug Options Menu/VBoxContainer"]
+[node name="TB Debug Options" type="PanelContainer" parent="Debug Options Menu/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
 theme = SubResource("Theme_oq1i5")
 theme_type_variation = &"PanelContainer_TitleBar"
 
-[node name="Title Bar label" type="Label" parent="Debug Options Menu/VBoxContainer/Title Bar PC"]
+[node name="Title Bar label" type="Label" parent="Debug Options Menu/VBoxContainer/TB Debug Options"]
 layout_mode = 2
 size_flags_horizontal = 6
 text = "Debug Options"
 
-[node name="Close Button" type="Button" parent="Debug Options Menu/VBoxContainer/Title Bar PC"]
+[node name="Close Button" type="Button" parent="Debug Options Menu/VBoxContainer/TB Debug Options"]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
@@ -50,14 +180,16 @@ text = "X"
 
 [node name="TabContainer" type="TabContainer" parent="Debug Options Menu/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/tab_separation = 15
+theme_override_constants/tab_separation = 13
 tab_alignment = 1
 current_tab = 0
 clip_tabs = false
 
 [node name="Grid" type="GridContainer" parent="Debug Options Menu/VBoxContainer/TabContainer"]
 layout_mode = 2
-size_flags_stretch_ratio = 3.43
+theme = SubResource("Theme_5crhr")
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 6
 columns = 2
 metadata/_tab_index = 0
 
@@ -242,8 +374,15 @@ size_flags_horizontal = 6
 size_flags_vertical = 0
 text = "asd"
 
-[connection signal="gui_input" from="Debug Options Menu/VBoxContainer/Title Bar PC" to="Debug Options Menu" method="_on_title_bar_pc_gui_input"]
-[connection signal="pressed" from="Debug Options Menu/VBoxContainer/Title Bar PC/Close Button" to="Debug Options Menu" method="_on_close_button_pressed"]
+[connection signal="gui_input" from="Option Selection/VBoxContainer2/TB Option Selection" to="Option Selection" method="_on_tb_option_selection_gui_input"]
+[connection signal="pressed" from="Option Selection/VBoxContainer2/TB Option Selection/Close Button" to="Option Selection" method="_on_close_button_pressed"]
+[connection signal="pressed" from="Option Selection/VBoxContainer2/VBoxContainer/Graphics Button" to="Option Selection" method="_on_graphics_button_pressed"]
+[connection signal="pressed" from="Option Selection/VBoxContainer2/VBoxContainer/Debug Options Button" to="Option Selection" method="_on_debug_options_button_pressed"]
+[connection signal="gui_input" from="Graphics/VBoxContainer/TB Graphic Options" to="Graphics" method="_on_tb_graphic_options_gui_input"]
+[connection signal="pressed" from="Graphics/VBoxContainer/TB Graphic Options/Close Button" to="Graphics" method="_on_close_button_pressed"]
+[connection signal="toggled" from="Graphics/VBoxContainer/GridContainer/Fullscreen CB" to="Graphics" method="_on_fullscreen_cb_toggled"]
+[connection signal="gui_input" from="Debug Options Menu/VBoxContainer/TB Debug Options" to="Debug Options Menu" method="_on_title_bar_pc_gui_input"]
+[connection signal="pressed" from="Debug Options Menu/VBoxContainer/TB Debug Options/Close Button" to="Debug Options Menu" method="_on_close_button_pressed"]
 [connection signal="toggled" from="Debug Options Menu/VBoxContainer/TabContainer/Grid/Grid Enable CB" to="Debug Options Menu" method="_on_grid_enable_cb_toggled"]
 [connection signal="value_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Grid/Line Width SB" to="Debug Options Menu" method="_on_line_width_sb_value_changed"]
 [connection signal="color_changed" from="Debug Options Menu/VBoxContainer/TabContainer/Grid/Line Color CPB" to="Debug Options Menu" method="_on_line_color_cpb_color_changed"]

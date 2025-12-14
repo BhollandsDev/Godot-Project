@@ -4,7 +4,7 @@ extends CharacterBody2D
 
 @onready var main = $"../../../Main"
 #@onready var nav_agent = $NavigationAgent2D
-@onready var animation_player = $AnimationPlayer
+#@onready var animation_player = $AnimationPlayer
 @onready var map_generator = get_node("../../Map Generator")
 @onready var idle_state: LimboState = $"Main State Machine/Idle State"
 @onready var walking_state: LimboState = $"Main State Machine/Walking State"
@@ -35,8 +35,8 @@ var select_mode : bool = false:
 	set(value):
 		select_mode = value
 		if value: # selecting will create selection box 
-			selection_rect = Rect2(Vector2(-8, -8), Vector2(16, 16))
-			selection_width = 1
+			selection_rect = Rect2(Vector2(-16, -16), Vector2(32, 32))
+			selection_width = 2
 		else: # deselecting will remove it
 			selection_rect = Rect2(0, 0, 0, 0,)
 			selection_width = 0
@@ -70,15 +70,10 @@ func _draw():
 	_debug_draw_path_visual()
 
 func _physics_process(_delta: float) -> void:
-	#print(current_path)
 	_path_movement()
 	_on_unit_moved()
 	move_and_slide()
-	#animation(_delta)
-	#print(velocity)
-	#if assigned_jobs:
-		#print(assigned_jobs)
-
+	
 #func to select the unit
 func select():
 	select_mode = true
@@ -108,22 +103,13 @@ func move_to(target_position):
 	current_path = PathfindingManager.get_path_route(global_position, target_position)
 	current_path_index = 0
 	
-func animation():
-	#print(velocity)
-	if velocity.length() > 0:
-		
-		if velocity.x < 0:
-			$Sprite2D.flip_h = true
-		elif velocity.x > 0:
-			$Sprite2D.flip_h = false
-
 #Updates occupied positons so they dont spawn ontop of eachother
 func _on_unit_moved():
 	main.update_unit_position(previous_position, position)
 	previous_position = position
 
 func _path_movement():
-	animation()
+	#animation()
 	var desired_velocity := Vector2.ZERO
 	# Only runs if path existis
 	if not current_path.is_empty():
@@ -180,7 +166,7 @@ func _on_map_changed(bad_cell: Vector2i):
 	var my_cell = ground.local_to_map(global_position)
 	if my_cell == bad_cell:
 		print("EMERGENCY: Ground destroyed under unit!! Jumping to saftey.")
-		_emergency_escape(my_cell)
+		#_emergency_escape(my_cell)
 	
 	if current_path.is_empty():
 		return
@@ -196,38 +182,3 @@ func _on_map_changed(bad_cell: Vector2i):
 	
 	if path_affected:
 		move_to(final_target_pos)
-		
-func move_to_job(job_tile: Vector2i):
-	#var job_tile = assigned_jobs[0]
-	var valid_neigbors = []
-	for offset in PathfindingManager.NEIGHBORS:
-		var neighbor = job_tile + offset
-		if PathfindingManager.is_walkable(neighbor):
-			valid_neigbors.append(neighbor)
-			
-	if valid_neigbors.is_empty():
-		print("Job is unreachable")
-		main_state_machine.dispatch("state_ended")
-		return
-	
-	var best_spot = valid_neigbors[0]
-	var min_dist = global_position.distance_squared_to(ground.map_to_local(best_spot))
-	
-	for spot in valid_neigbors:
-		var d = global_position.distance_squared_to(ground.map_to_local(spot))
-		if d < min_dist:
-			min_dist = d
-			best_spot = spot
-	move_to(ground.map_to_local(best_spot))
-
-func _emergency_escape(current_water_cell: Vector2i):
-	for offset in PathfindingManager.NEIGHBORS:
-		var neighbor = current_water_cell + offset
-		if PathfindingManager.is_walkable(neighbor):
-			global_position = ground.map_to_local(neighbor)
-			velocity = Vector2.ZERO
-			current_path = PackedVector2Array()
-			
-			main_state_machine.dispatch("state_ended")
-			return
-	print("Unit is Stranded")

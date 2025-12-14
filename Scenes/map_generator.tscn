@@ -4,7 +4,6 @@
 [ext_resource type="TileSet" uid="uid://ts3t2ayb31fe" path="res://Resources/testing_shore_water.tres" id="2_wscbm"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_wscbm"]
-frequency = 0.0019
 offset = Vector3(0, 450, 0)
 domain_warp_type = 2
 domain_warp_fractal_type = 0

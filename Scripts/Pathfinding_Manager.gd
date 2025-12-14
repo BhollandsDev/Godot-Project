@@ -64,38 +64,6 @@ func set_tile_walkable(cell: Vector2i, walkable: bool):
 	
 	SignalBus.map_changed.emit(cell)
 
-#func is_safe_to_dig(cell: Vector2i) -> bool:
-	#if not is_walkable(cell):
-		#
-		#return false
-	#
-	#var walkable_neighbors := []
-	#for offset in NEIGHBORS:
-		#var n = cell + offset
-		#if is_walkable(n):
-			#walkable_neighbors.append(n)
-	#
-	#if walkable_neighbors.is_empty():
-		#return false
-	#
-	#if walkable_neighbors.size() > 1:
-		#return true
-	#
-	#var id = tile_to_id[cell]
-	#astar.set_point_disabled(id, true)
-	#
-	#var safe = false
-	#var neighbor_id = tile_to_id[walkable_neighbors[0]]
-	#for offset in NEIGHBORS:
-		#var other = walkable_neighbors[0] + offset
-		#if is_walkable(other) and other != cell:
-			#safe = astar.get_id_path(neighbor_id, tile_to_id[other]).size() > 0
-			#if safe:
-				#break
-	#astar.set_point_disabled(id, false)
-	#return safe
-#
-
 # --------------------------------------------------------
 #              UNIT PATHFINDING
 # --------------------------------------------------------
