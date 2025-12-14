@@ -15,7 +15,8 @@ var water_tiles :=[
 	Vector2i(15,13),
 	Vector2i(16,13)
 ]
-
+const SAFE_ZONE_CENTER := Vector2i(2, 2)
+const SAFE_ZONE_RADIUS := 6.0
 #const TILE_SIZE_SETTER := 32
 const CHUNK_SIZE := 32
 const ACTIVE_RADIUS := 1 # chunks activley around camera (3x3)
@@ -115,6 +116,9 @@ func _thread_calculate_chunk_data(chunk_coords: Vector2i) -> void:
 			"cell": cell,
 			"atlas_coords": water_tiles.pick_random()
 		})
+		
+		if Vector2i(world_x, world_y).distance_to(SAFE_ZONE_CENTER) < SAFE_ZONE_RADIUS:
+			noise_val = 1.0
 		
 		if noise_val >= 0.0:
 			ground_cells_array.append(cell)
