@@ -32,7 +32,8 @@ func _ready() -> void:
 func add_dig_job(tile: Vector2i):
 	if not available_dig_jobs.has(tile) and not claimed_dig_jobs.has(tile):
 		available_dig_jobs[tile] = true
-		selection_manager.draw_dig_tile_selection.append(tile)
+		
+		#selection_manager.draw_dig_tile_selection.append(tile)
 		selection_manager.queue_redraw()
 		
 		_assign_jobs_to_idle_units()
@@ -43,7 +44,7 @@ func _on_unit_idle(unit):
 
 func _assign_jobs_to_idle_units():
 	for unit in get_tree().get_nodes_in_group("Units"):
-		if unit.main_state_machine.current_state == unit.idle_state:
+		if unit.main_state_machine.get_active_state() == unit.idle_state:
 			_try_assign_job(unit)
 			
 
@@ -69,16 +70,17 @@ func _try_assign_job(unit):
 		unit.assign_job(best_tile)
 		
 func complete_dig_job(tile: Vector2i):
-	ground. erase_cell(tile)
+	ground.erase_cell(tile)
 	PathfindingManager.set_tile_walkable(tile, false)
 	
 	dirt_inventory += 1
 	print("Dig complete! Dirt Inventory: ", dirt_inventory)
 	
 	claimed_dig_jobs.erase(tile)
-	if selection_manager.draw_dig_tile_selection.has(tile):
-		selection_manager.draw_dig_tile_selection.erase(tile)
-		selection_manager.queue_redraw()
+	
+	#if selection_manager.draw_dig_tile_selection.has(tile):
+		#selection_manager.draw_dig_tile_selection.erase(tile)
+	selection_manager.queue_redraw()
 
 func abort_job(tile: Vector2i, unit):
 	if claimed_dig_jobs.has(tile):

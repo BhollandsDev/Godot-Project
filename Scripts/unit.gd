@@ -49,7 +49,7 @@ func _ready() -> void:
 	SignalBus.unit_idle.emit(self)
 	SignalBus.map_changed.connect(_on_map_changed)
 	#PathfindingManager.map_changed.connect(_on_map_changed)
-	
+	#print(main_state_machine.get_active_state())
 	
 func initiate_state_machine():
 	main_state_machine.add_transition(idle_state, walking_state, "move_to_target")
@@ -185,7 +185,7 @@ func _on_map_changed(bad_cell: Vector2i):
 
 func assign_job(tile: Vector2i):
 	assigned_jobs.append(tile)
-	if main_state_machine.current_state == idle_state:
+	if main_state_machine.get_active_state() == idle_state:
 		main_state_machine.dispatch("start_digging")
 	
 func clear_job():
