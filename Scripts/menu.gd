@@ -10,7 +10,6 @@ extends PanelContainer
 
 func _ready() -> void:
 	in_game_menu = main.get_node("In Game Menu")
-	print(in_game_menu.visible)
 
 
 func _on_add_button_pressed() -> void:
@@ -36,5 +35,5 @@ func _on_options_button_pressed() -> void:
 
 
 func _on_dig_button_toggled(toggled_on: bool) -> void:
-	selection_manager.tile_selection_enable = toggled_on
-	
+	#selection_manager.tile_selection_enable = toggled_on
+	selection_manager.is_selecting_dig_area = toggled_on

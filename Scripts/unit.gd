@@ -182,3 +182,11 @@ func _on_map_changed(bad_cell: Vector2i):
 	
 	if path_affected:
 		move_to(final_target_pos)
+
+func assign_job(tile: Vector2i):
+	assigned_jobs.append(tile)
+	if main_state_machine.current_state == idle_state:
+		main_state_machine.dispatch("start_digging")
+	
+func clear_job():
+	assigned_jobs.clear()

@@ -1,72 +1,86 @@
 extends LimboState
 
 
-@onready var main_state_machine: LimboHSM = $".."
+#@onready var main_state_machine: LimboHSM = $".."
 @onready var unit: CharacterBody2D = $"../.."
 
 #@onready var nav_agent: NavigationAgent2D = $"../../NavigationAgent2D"
-#@onready var animation_player: AnimationPlayer = $"../../AnimationPlayer"
+@onready var animated_sprite: AnimatedSprite2D = $"../../Visuals/Sprite2D"
 @onready var ground = get_node("/root/Main/Map Generator/ground")
-@onready var main = get_node("/root/Main")
-@onready var map_generator = get_node("/root/Main/Map Generator")
-@onready var selection_manager = get_node("/root/Main/Selection Draw")
-
+#@onready var main = get_node("/root/Main")
+#@onready var map_generator = get_node("/root/Main/Map Generator")
+#@onready var selection_manager = get_node("/root/Main/Selection Draw")
+var current_job_tile: Vector2i
+var dig_timer: float = 0.0
+var DIG_DURATION: float = 1.0 # Seconds to dig
+var SAFE_ZONE_POS := Vector2(80,80) # The starting spawn area from Main.gd
 var fail_counter : int = 0
 
 func _enter() -> void:
-	#distance_check_to_job()
-	pass
+	if unit.assigned_jobs.is_empty():
+		dispatch("state_ended")
+		return
+	current_job_tile = unit.assigned_jobs[0]
+	dig_timer = 0.0
+	
+	var my_tile = ground.local_to_map(unit.global_position)
+	if is_neighbor(my_tile, current_job_tile):
+		unit.velocity = Vector2.ZERO
+		animated_sprite.play("Idle")
+	else:
+		var target_pos = find_best_stand_pos(current_job_tile)
+		unit.move_to(target_pos)
+		dispatch("move_to_target")
 
 func _update(_delta: float) -> void:
+	if not unit.assigned_jobs.is_empty():
+		var my_tile = ground.local_to_map(unit.global_position)
+		if is_neighbor(my_tile, current_job_tile):
+			dig_timer += _delta
+			if dig_timer >= DIG_DURATION:
+				perform_dig()
 	
+	#if not unit.assigned_jobs:
+		#dispatch("state_ended")
+
+
 	
-	if not unit.assigned_jobs:
+func perform_dig():
+	var is_safe = PathfindingManager.check_reachability_after_removal(
+		current_job_tile,
+		unit.global_position,
+		SAFE_ZONE_POS
+	)
+	if is_safe:
+		JobManager.complete_dig_job(current_job_tile)
+		unit.assigned_jobs.clear()
 		dispatch("state_ended")
-
-#func distance_check_to_job():
-	#var job_tile = unit.assigned_jobs[0]
-	#var unit_cell = ground.local_to_map(unit.global_position)
-	#var world_job_pos = ground.map_to_local(job_tile)
-	##var grid_distance = Vector2(unit_cell - job_tile).abs().max_axis_index()
-	#var dist = unit.global_position.distance_to(world_job_pos)
-	#var is_close_enough = dist < 50.0
-	#var diff = (unit_cell - job_tile).abs()
-	#var is_neighbor = diff.x <= 1 and diff.y <= 1
-	#if not is_neighbor and not is_close_enough:
-		#print("Unit too far. Repositioning...")
-		#dispatch("move_to_target")
-		#return
-	#
-
-
-	#var dig_complete = await  JobManager.perform_dig(job_tile)
-	#if dig_complete == false and fail_counter < 3:
-		#unit.assigned_jobs.erase(job_tile)
-		#JobManager.claimed_dig_jobs.erase(job_tile)
-		#JobManager.available_dig_jobs.append(job_tile)
-		##print("claimed, ",JobManager.claimed_dig_jobs)
-		##print("available, ", JobManager.available_dig_jobs)
-		#fail_counter += 1
-		#selection_manager.queue_redraw()
-		#print(fail_counter)
-	#elif dig_complete == false and fail_counter >= 3:
-		#JobManager.claimed_dig_jobs.erase(job_tile)
-		#unit.assigned_jobs.erase(job_tile)
-		#selection_manager.queue_redraw()
-		#print("Job aborted")
-		##print("assigned jobs, ",unit.assigned_jobs)
-		##print("claimed, ",JobManager.claimed_dig_jobs)
-		##print("available, ", JobManager.available_dig_jobs)
-		#fail_counter = 0
-		##print(fail_counter)
-		#dispatch("state_ended")
-		#
-	#if dig_complete and is_active():
-		#if not unit.assigned_jobs.is_empty():
-			#unit.assigned_jobs.erase(job_tile)
-		#dispatch("state_ended")
-
+		
+func is_neighbor(t1: Vector2i, t2: Vector2i) -> bool:
+	var diff = (t1 - t2).abs()
+	return diff.x <= 1 and diff.y <= 1 and t1 != t2
 	
-
+func find_best_stand_pos(target_tile: Vector2i) -> Vector2:
+	var neighbors = [
+		Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0),
+		Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)
+	]
+	
+	var closest_pos = unit.global_position
+	var min_dist = INF
+	var found = false
+	
+	for offset in neighbors:
+		var check_tile = target_tile + offset
+		if PathfindingManager.is_walkable(check_tile):
+			var world_pos = ground.map_to_local(check_tile)
+			var dist = unit.global_position.distance_squared_to(world_pos)
+			if dist < min_dist:
+				min_dist = dist
+				closest_pos = world_pos
+				found = true
+				
+	return closest_pos
+	
 	
 	

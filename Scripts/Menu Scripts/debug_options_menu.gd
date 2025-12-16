@@ -55,10 +55,10 @@ func _ready() -> void:
 	path_line_color_cpb.color = selection_manager.path_visual_line_color
 	
 	### SelectionBox - align with preset defaults
-	selec_box_min_size_sb.value = selection_manager.selection_min_rect_size
-	selec_box_line_width_sb.value = selection_manager.selection_rect_width
-	selec_box_line_color_cpb.color = selection_manager.selection_rect_color
-	selec_box_filled_cb.button_pressed = selection_manager.selection_rect_filled
+	#selec_box_min_size_sb.value = selection_manager.selection_min_rect_size
+	#selec_box_line_width_sb.value = selection_manager.selection_rect_width
+	#selec_box_line_color_cpb.color = selection_manager.selection_rect_color
+	#selec_box_filled_cb.button_pressed = selection_manager.selection_rect_filled
 	
 	### Camera Options - align with preset defaults
 	enable_edge_scroll_cb.button_pressed = camera.enable_edge_scroll

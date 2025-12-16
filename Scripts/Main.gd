@@ -92,8 +92,6 @@ func update_unit_position(old_pos: Vector2, new_pos: Vector2):
 func delete_selected_units():
 	for unit in get_tree().get_nodes_in_group("Selected Units"):
 		if is_instance_valid(unit):
-			#print(true)
 			occupied_positions.erase(unit.position)
-			#print(selection_manager)
 			JobManager.idle_units.erase(unit)
 			unit.queue_free()
