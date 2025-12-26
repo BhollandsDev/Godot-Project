@@ -64,28 +64,61 @@ func set_tile_walkable(cell: Vector2i, walkable: bool):
 	
 	SignalBus.map_changed.emit(cell)
 
-func check_reachability_after_removal(tile_to_remove: Vector2i, start_pos: Vector2, target_pos: Vector2) -> bool:
-	var start_cell = Vector2i(floor(start_pos.x / TILE_SIZE.x), floor(start_pos.y / TILE_SIZE.y))
-	var target_cell = Vector2i(floor(target_pos.x / TILE_SIZE.x), floor(target_pos.y / TILE_SIZE.y))
-	
-	if not tile_to_id.has(start_cell) or not tile_to_id.has(target_cell):
-		return false
-		
+func is_safe_to_dig(tile_to_remove: Vector2i, unit_position: Array[Vector2], home_pos: Vector2) -> bool:
 	var remove_id = tile_to_id.get(tile_to_remove)
 	if remove_id == null: return true
 	
 	var was_disabled = astar.is_point_disabled(remove_id)
 	astar.set_point_disabled(remove_id, true)
+	var all_safe = true
+	var home_cell = Vector2i(floor(home_pos.x / TILE_SIZE.x), floor(home_pos.y / TILE_SIZE.y))
 	
-	var start_id = tile_to_id[start_cell]
-	var target_id = tile_to_id[target_cell]
+	if not tile_to_id.has(home_cell):
+		astar.set_point_disabled(remove_id, was_disabled)
+		return false
 	
-	var path = astar.get_id_path(start_id, target_id)
-	var is_safe = path.size() > 0
+	var home_id = tile_to_id[home_cell]
 	
-	astar.set_point_disabled(remove_id,  was_disabled)
-	
-	return is_safe
+	for pos in unit_position:
+		var unit_cell = Vector2i(floor(home_pos.x / TILE_SIZE.x), floor(home_pos.y / TILE_SIZE.y))
+		if unit_cell == tile_to_remove:
+			all_safe = false
+			break
+		if not tile_to_id.has(unit_cell): continue
+		
+		var unit_id = tile_to_id[unit_cell]
+		
+		if unit_id == home_id: continue
+		var path = astar.get_id_path(unit_id, home_id)
+		if path.size() == 0:
+			all_safe = false
+			break
+		
+	astar.set_point_disabled(remove_id, was_disabled)
+	return all_safe
+
+#func check_reachability_after_removal(tile_to_remove: Vector2i, start_pos: Vector2, target_pos: Vector2) -> bool:
+	#var start_cell = Vector2i(floor(start_pos.x / TILE_SIZE.x), floor(start_pos.y / TILE_SIZE.y))
+	#var target_cell = Vector2i(floor(target_pos.x / TILE_SIZE.x), floor(target_pos.y / TILE_SIZE.y))
+	#
+	#if not tile_to_id.has(start_cell) or not tile_to_id.has(target_cell):
+		#return false
+		#
+	#var remove_id = tile_to_id.get(tile_to_remove)
+	#if remove_id == null: return true
+	#
+	#var was_disabled = astar.is_point_disabled(remove_id)
+	#astar.set_point_disabled(remove_id, true)
+	#
+	#var start_id = tile_to_id[start_cell]
+	#var target_id = tile_to_id[target_cell]
+	#
+	#var path = astar.get_id_path(start_id, target_id)
+	#var is_safe = path.size() > 0
+	#
+	#astar.set_point_disabled(remove_id,  was_disabled)
+	#
+	#return is_safe
 	
 	
 	
